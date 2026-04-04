@@ -9,7 +9,7 @@ Real-time football scores, fixtures, standings, and a UCL knockout bracket — f
 ## Features
 
 - **Live scores** — live status, scorelines, and recent match states refresh automatically
-- **All major leagues** — PL · BUN · L1 · SA · La Liga · UCL, each with its own colour theme
+- **All major leagues** — PL · BUN · L1 · SA · La Liga · UCL, each with its own color theme
 - **UCL knockout bracket** — aggregated two-leg ties with correct winner detection
 - **Standings & top scorers** — league table with form guide, goal difference, and scorer stats
 - **Club profiles** — squad, coach, venue, recent results, and upcoming fixtures per team
