@@ -2,7 +2,7 @@
 
 Real-time football scores, fixtures, standings, and a UCL knockout bracket — for the Premier League, Bundesliga, Ligue 1, Serie A, La Liga, and Champions League.
 
-![FootyLive screenshot](docs/screenshot.png)
+![FootyLive screenshot](docs/premScreenshot.png)
 
 ---
 
