@@ -160,7 +160,7 @@ class FootballDataService:
         events = []
         now = datetime.now(timezone.utc)
 
-        for goal in match_data.get("goals", []):
+        for goal in (match_data.get("goals") or []):
             team = goal.get("team") or {}
             scorer = goal.get("scorer") or {}
             events.append({
@@ -172,7 +172,7 @@ class FootballDataService:
                 "created_at": now,
             })
 
-        for booking in match_data.get("bookings", []):
+        for booking in (match_data.get("bookings") or []):
             team = booking.get("team") or {}
             player = booking.get("player") or {}
             card = booking.get("card", "YELLOW_CARD")
@@ -186,7 +186,7 @@ class FootballDataService:
                 "created_at": now,
             })
 
-        for sub in match_data.get("substitutions", []):
+        for sub in (match_data.get("substitutions") or []):
             team = sub.get("team") or {}
             player_out = sub.get("playerOut") or {}
             player_in = sub.get("playerIn") or {}

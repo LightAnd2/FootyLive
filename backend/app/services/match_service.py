@@ -77,7 +77,7 @@ class MatchService:
     async def get_upcoming_matches(
         self, days: int = 30, competition: Optional[str] = None
     ) -> List[MatchSchema]:
-        start_date = datetime.now()
+        start_date = datetime.now(timezone.utc)
         end_date = start_date + timedelta(days=days)
         query = self.db.query(Match).filter(
             and_(

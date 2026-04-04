@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Match } from '../types';
 import { apiService } from '../services/api';
-import { ArrowLeft, CalendarDays, MapPin, Shield, RefreshCw } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin, Shield, RefreshCw, User } from 'lucide-react';
 import { format } from 'date-fns';
 import ErrorMessage from './ErrorMessage';
 
@@ -170,7 +170,7 @@ const MatchDetail: React.FC = () => {
       </div>
 
       {/* Info row */}
-      <div className="grid gap-3 mb-4 sm:grid-cols-3">
+      <div className={`grid gap-3 mb-4 ${match.referee ? 'sm:grid-cols-2 md:grid-cols-4' : 'sm:grid-cols-3'}`}>
         <div className="glass-effect rounded-xl p-4">
           <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Competition</p>
           <p className="text-sm text-slate-200 flex items-center gap-2">
@@ -199,6 +199,15 @@ const MatchDetail: React.FC = () => {
               : 'Scheduled'}
           </p>
         </div>
+        {match.referee && (
+          <div className="glass-effect rounded-xl p-4">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Referee</p>
+            <p className="text-sm text-slate-200 flex items-center gap-2">
+              <User className="w-4 h-4 text-slate-500 shrink-0" />
+              {match.referee}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Goal scorers */}

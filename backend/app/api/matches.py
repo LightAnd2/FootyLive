@@ -30,7 +30,7 @@ async def get_today_matches(
 ):
     """Get today's matches"""
     match_service = MatchService(db)
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     return await match_service.get_matches_by_date(
         today, normalize_competition_code(competition)
     )
@@ -61,7 +61,7 @@ async def get_matches(
     """Get matches with optional filtering"""
     match_service = MatchService(db)
     if not date and not status:
-        date = datetime.now().strftime("%Y-%m-%d")
+        date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     comp_code = normalize_competition_code(competition)
     matches = await match_service.get_matches(
         status=status,
