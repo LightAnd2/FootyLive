@@ -1,0 +1,317 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --league-accent: #00ff85;
+    --league-accent-soft: rgba(0, 255, 133, 0.16);
+    --league-accent-text: #00ff85;
+    --league-page-background: linear-gradient(135deg, #1a0020 0%, #006640 25%, #016b6e 50%, #006640 75%, #1a0020 100%);
+    --league-stripe-color: rgba(0, 180, 90, 0.12);
+    --league-line-color: rgba(255,255,255,0.42);
+    --league-ring-color: rgba(255,255,255,0.18);
+    --screen-overlay-1: repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 2px,
+      var(--league-stripe-color) 2px, var(--league-stripe-color) 4px,
+      transparent 4px, transparent 6px
+    );
+    --screen-overlay-2: linear-gradient(
+      90deg,
+      transparent 48%, var(--league-line-color) 49%,
+      var(--league-line-color) 51%, transparent 52%
+    );
+    --screen-overlay-3: radial-gradient(
+      circle at 50% 50%,
+      transparent 17%, var(--league-ring-color) 17%,
+      var(--league-ring-color) 19%, transparent 19%
+    );
+  }
+
+  * {
+    @apply border-white/10;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply text-slate-100;
+    background:
+      var(--league-page-background),
+      var(--screen-overlay-1),
+      var(--screen-overlay-2),
+      var(--screen-overlay-3);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+    background-attachment: fixed;
+  }
+
+  :root[data-screen='live'] {
+    --screen-overlay-1: repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 2px,
+      var(--league-stripe-color) 2px, var(--league-stripe-color) 4px,
+      transparent 4px, transparent 6px
+    );
+    --screen-overlay-2: linear-gradient(
+      90deg,
+      transparent 48%, var(--league-line-color) 49%,
+      var(--league-line-color) 51%, transparent 52%
+    );
+    --screen-overlay-3: radial-gradient(
+      circle at 50% 50%,
+      transparent 17%, var(--league-ring-color) 17%,
+      var(--league-ring-color) 19%, transparent 19%
+    );
+  }
+
+  :root[data-screen='today'] {
+    --screen-overlay-1: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--league-accent-soft) 55%, transparent) 0%,
+      transparent 22%,
+      transparent 78%,
+      color-mix(in srgb, var(--league-ring-color) 55%, transparent) 100%
+    );
+    --screen-overlay-2: repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 68px,
+      color-mix(in srgb, var(--league-line-color) 36%, transparent) 68px,
+      color-mix(in srgb, var(--league-line-color) 36%, transparent) 70px
+    );
+    --screen-overlay-3: radial-gradient(
+      circle at 50% 22%,
+      color-mix(in srgb, var(--league-ring-color) 90%, transparent) 0%,
+      transparent 24%
+    );
+  }
+
+  :root[data-screen='upcoming'] {
+    --screen-overlay-1: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--league-accent-soft) 40%, transparent) 0%,
+      transparent 32%,
+      transparent 68%,
+      color-mix(in srgb, var(--league-ring-color) 40%, transparent) 100%
+    );
+    --screen-overlay-2: repeating-linear-gradient(
+      135deg,
+      transparent 0px,
+      transparent 22px,
+      color-mix(in srgb, var(--league-stripe-color) 72%, transparent) 22px,
+      color-mix(in srgb, var(--league-stripe-color) 72%, transparent) 25px
+    );
+    --screen-overlay-3: radial-gradient(
+      circle at 82% 18%,
+      color-mix(in srgb, var(--league-line-color) 55%, transparent) 0%,
+      transparent 22%
+    );
+  }
+
+  :root[data-screen='results'] {
+    --screen-overlay-1: linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in srgb, var(--league-line-color) 20%, transparent) 14%,
+      transparent 14.8%,
+      transparent 85.2%,
+      color-mix(in srgb, var(--league-line-color) 20%, transparent) 86%,
+      transparent 100%
+    );
+    --screen-overlay-2: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 56px,
+      color-mix(in srgb, var(--league-stripe-color) 56%, transparent) 56px,
+      color-mix(in srgb, var(--league-stripe-color) 56%, transparent) 58px
+    );
+    --screen-overlay-3: radial-gradient(
+      circle at 18% 84%,
+      color-mix(in srgb, var(--league-ring-color) 85%, transparent) 0%,
+      transparent 24%
+    );
+  }
+
+  :root[data-screen='standings'] {
+    --screen-overlay-1: linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in srgb, var(--league-stripe-color) 80%, transparent) 8%,
+      transparent 8.8%,
+      transparent 91.2%,
+      color-mix(in srgb, var(--league-stripe-color) 80%, transparent) 92%,
+      transparent 100%
+    );
+    --screen-overlay-2: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 54px,
+      color-mix(in srgb, var(--league-line-color) 50%, transparent) 54px,
+      color-mix(in srgb, var(--league-line-color) 50%, transparent) 56px
+    );
+    --screen-overlay-3: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--league-ring-color) 75%, transparent) 14%,
+      transparent 14.8%,
+      transparent 85.2%,
+      color-mix(in srgb, var(--league-ring-color) 75%, transparent) 86%,
+      transparent 100%
+    );
+  }
+
+  :root[data-screen='scorers'] {
+    --screen-overlay-1: radial-gradient(
+      circle at 20% 20%,
+      color-mix(in srgb, var(--league-accent-soft) 90%, transparent) 0%,
+      transparent 28%
+    );
+    --screen-overlay-2: radial-gradient(
+      circle at 80% 18%,
+      color-mix(in srgb, var(--league-ring-color) 95%, transparent) 0%,
+      transparent 24%
+    );
+    --screen-overlay-3: repeating-linear-gradient(
+      135deg,
+      transparent 0px,
+      transparent 18px,
+      color-mix(in srgb, var(--league-stripe-color) 75%, transparent) 18px,
+      color-mix(in srgb, var(--league-stripe-color) 75%, transparent) 21px
+    );
+  }
+
+  :root[data-screen='bracket'] {
+    --screen-overlay-1: radial-gradient(
+      circle at 50% 8%,
+      color-mix(in srgb, var(--league-accent-soft) 42%, transparent) 0%,
+      transparent 28%
+    );
+    --screen-overlay-2: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--league-line-color) 12%, transparent) 0%,
+      transparent 18%,
+      transparent 82%,
+      color-mix(in srgb, var(--league-line-color) 12%, transparent) 100%
+    );
+    --screen-overlay-3: none;
+  }
+
+  :root[data-screen='teams'] {
+    --screen-overlay-1: radial-gradient(
+      circle at 16% 18%,
+      color-mix(in srgb, var(--league-ring-color) 95%, transparent) 0%,
+      transparent 20%
+    );
+    --screen-overlay-2: radial-gradient(
+      circle at 84% 82%,
+      color-mix(in srgb, var(--league-accent-soft) 90%, transparent) 0%,
+      transparent 24%
+    );
+    --screen-overlay-3: repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 80px,
+      color-mix(in srgb, var(--league-line-color) 40%, transparent) 80px,
+      color-mix(in srgb, var(--league-line-color) 40%, transparent) 82px,
+      transparent 82px,
+      transparent 164px
+    );
+  }
+
+  :root[data-screen='detail'] {
+    --screen-overlay-1: radial-gradient(
+      circle at 50% 8%,
+      color-mix(in srgb, var(--league-accent-soft) 95%, transparent) 0%,
+      transparent 26%
+    );
+    --screen-overlay-2: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--league-line-color) 18%, transparent) 0%,
+      transparent 16%,
+      transparent 84%,
+      color-mix(in srgb, var(--league-line-color) 18%, transparent) 100%
+    );
+    --screen-overlay-3: repeating-linear-gradient(
+      135deg,
+      transparent 0px,
+      transparent 28px,
+      color-mix(in srgb, var(--league-stripe-color) 68%, transparent) 28px,
+      color-mix(in srgb, var(--league-stripe-color) 68%, transparent) 30px
+    );
+  }
+
+  html { scroll-behavior: smooth; }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold
+           transition-all duration-150 focus:outline-none disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply text-[#0d1117] font-bold shadow-lg;
+    background-color: var(--league-accent);
+    box-shadow: 0 14px 32px var(--league-accent-soft);
+  }
+
+  .btn-secondary {
+    @apply bg-black/30 text-slate-200 hover:bg-black/50 border border-white/15;
+  }
+
+  /* Cards — dark glass on colorful background */
+  .card {
+    @apply bg-black/40 backdrop-blur-md rounded-xl border border-white/15 overflow-hidden;
+  }
+
+  .card-hover {
+    @apply card hover:bg-black/55 hover:border-white/25 hover:shadow-xl hover:shadow-black/40
+           transition-all duration-200 cursor-pointer;
+  }
+
+  /* Panels, header, tables */
+  .glass-effect {
+    @apply bg-black/35 backdrop-blur-md border border-white/15;
+  }
+
+  /* Status badges */
+  .status-badge {
+    @apply px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide;
+  }
+  .status-live      { @apply bg-red-500/25 text-red-300 border border-red-500/40; }
+  .status-scheduled { @apply bg-blue-500/20 text-blue-300 border border-blue-500/30; }
+  .status-finished  { @apply bg-white/10 text-slate-400 border border-white/15; }
+
+  /* Live dot */
+  .live-indicator { @apply w-2 h-2 rounded-full bg-red-500 animate-pulse inline-block; }
+
+  /* Score */
+  .score-animation { @apply transition-all duration-300; }
+
+  /* Team logo */
+  .team-logo {
+    @apply w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0;
+  }
+
+  .match-card { @apply relative overflow-hidden; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+}
+
+@keyframes score-bounce {
+  0%  { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100%{ transform: scale(1.05); }
+}
