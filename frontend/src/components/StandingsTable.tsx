@@ -9,6 +9,25 @@ interface StandingsTableProps {
   initialView?: 'table' | 'bracket';
 }
 
+type Zone = 'ucl' | 'uel' | 'uecl' | 'playoff' | 'relegation' | null;
+
+const ZONES: Record<LeagueCode, (pos: number, total: number) => Zone> = {
+  PL:  (p, t) => p <= 4 ? 'ucl' : p === 5 ? 'uel' : p === 6 ? 'uecl' : p > t - 3 ? 'relegation' : null,
+  BL1: (p, t) => p <= 4 ? 'ucl' : p === 5 ? 'uel' : p === 6 ? 'uecl' : p === t - 2 ? 'playoff' : p > t - 2 ? 'relegation' : null,
+  FL1: (p, t) => p <= 3 ? 'ucl' : p <= 5 ? 'uel' : p === 6 ? 'uecl' : p === t - 2 ? 'playoff' : p > t - 2 ? 'relegation' : null,
+  SA:  (p, t) => p <= 4 ? 'ucl' : p <= 6 ? 'uel' : p === 7 ? 'uecl' : p > t - 3 ? 'relegation' : null,
+  PD:  (p, t) => p <= 4 ? 'ucl' : p <= 6 ? 'uel' : p === 7 ? 'uecl' : p > t - 3 ? 'relegation' : null,
+  CL:  () => null,
+};
+
+const ZONE_STYLE: Record<NonNullable<Zone>, { border: string; label: string; dot: string }> = {
+  ucl:       { border: 'border-l-2 border-l-blue-500',   dot: 'bg-blue-500',   label: 'Champions League' },
+  uel:       { border: 'border-l-2 border-l-orange-500', dot: 'bg-orange-500', label: 'Europa League' },
+  uecl:      { border: 'border-l-2 border-l-teal-400',   dot: 'bg-teal-400',   label: 'Conference League' },
+  playoff:   { border: 'border-l-2 border-l-amber-400',  dot: 'bg-amber-400',  label: 'Relegation Playoff' },
+  relegation:{ border: 'border-l-2 border-l-red-500',    dot: 'bg-red-500',    label: 'Relegation' },
+};
+
 interface BracketMatch {
   id: number;
   date: string;
@@ -694,10 +713,13 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
               </tr>
             </thead>
             <tbody>
-              {standings.table.map((row) => (
+              {standings.table.map((row) => {
+                const zone = ZONES[competition]?.(row.position, standings.table.length) ?? null;
+                const zoneStyle = zone ? ZONE_STYLE[zone].border : '';
+                return (
                 <tr
                   key={row.team.id}
-                  className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                  className={`border-b border-white/5 hover:bg-white/5 transition-colors ${zoneStyle}`}
                 >
                   <td className="px-4 py-3">
                     <span className="font-bold text-slate-400">{row.position}</span>
@@ -746,9 +768,24 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                   </td>
                   <td className="px-4 py-3 text-center font-black text-white text-base tabular-nums">{row.points}</td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
+          {/* Zone legend */}
+          {competition !== 'CL' && (
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 px-4 py-3 border-t border-white/8">
+              {(Object.entries(ZONE_STYLE) as [NonNullable<Zone>, typeof ZONE_STYLE[NonNullable<Zone>]][])
+                .filter(([zone]) => standings.table.some(r => ZONES[competition]?.(r.position, standings.table.length) === zone))
+                .map(([, style]) => (
+                  <span key={style.label} className="flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
+                    {style.label}
+                  </span>
+                ))
+              }
+            </div>
+          )}
         </div>
         )
       ) : (

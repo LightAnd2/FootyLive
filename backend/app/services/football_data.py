@@ -136,13 +136,27 @@ class FootballDataService:
             (r.get("name", "") for r in referees if r.get("role") == "REFEREE"), ""
         )
 
+        # Calculate match minute from kickoff time (API doesn't provide it on free tier)
+        minute = match_data.get("minute")
+        if minute is None and status_raw == "IN_PLAY":
+            try:
+                elapsed = (datetime.now(timezone.utc) - match_date).total_seconds() / 60
+                if elapsed <= 52:
+                    # First half — subtract ~3 min for pre-kick delay
+                    minute = max(1, int(elapsed) - 3)
+                else:
+                    # Second half — subtract ~15 min halftime + ~3 min pre-kick delay
+                    minute = max(46, int(elapsed - 18))
+            except Exception:
+                pass
+
         competition = match_data.get("competition") or {}
         return {
             "external_id": match_data.get("id"),
             "home_score": full_time.get("home") or 0,
             "away_score": full_time.get("away") or 0,
             "status": status,
-            "minute": match_data.get("minute"),
+            "minute": minute,
             "venue": match_data.get("venue") or "",
             "referee": referee_name,
             "match_date": match_date,
