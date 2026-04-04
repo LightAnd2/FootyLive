@@ -112,21 +112,6 @@ Open [http://localhost:5173](http://localhost:5173).
    - `VITE_WS_URL` = `wss://your-app.railway.app/ws`
 3. Deploy — every push to `main` redeploys automatically
 
-## Resume Note
-
-This project is absolutely worth hosting if you're using it on a resume. A live demo makes the work feel much more credible, especially because the app has:
-
-- multi-league data handling
-- real-time score updates
-- a custom UCL knockout bracket
-- full-stack React + FastAPI architecture
-
-If you host it, make sure the deployed version has:
-
-- a persistent database
-- the correct frontend/backend environment variables
-- a working `football-data.org` API key
-
 ---
 
 ## API Reference
