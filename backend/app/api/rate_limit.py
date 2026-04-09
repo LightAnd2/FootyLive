@@ -1,9 +1,13 @@
+import logging
+from typing import Any, Dict
+
 from fastapi import APIRouter, HTTPException
-from app.core.rate_limiter import rate_limiter
+
 from app.core.rate_config import RateLimitConfig
-from typing import Dict, Any
+from app.core.rate_limiter import rate_limiter
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 @router.get("/usage")
 async def get_rate_limit_usage() -> Dict[str, Any]:
@@ -19,8 +23,9 @@ async def get_rate_limit_usage() -> Dict[str, Any]:
             "limits": limits,
             "status": "healthy" if stats["minute_remaining"] > 0 else "rate_limited"
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get usage stats: {str(e)}")
+    except Exception:
+        logger.exception("Failed to get rate limit usage stats")
+        raise HTTPException(status_code=500, detail="Failed to get usage stats")
 
 @router.get("/limits")
 async def get_rate_limits() -> Dict[str, Any]:
@@ -39,8 +44,9 @@ async def get_rate_limits() -> Dict[str, Any]:
                 "plan": "premium" if limits["minute_limit"] >= 120 else "default"
             }
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get rate limits: {str(e)}")
+    except Exception:
+        logger.exception("Failed to get rate limit configuration")
+        raise HTTPException(status_code=500, detail="Failed to get rate limits")
 
 @router.get("/health")
 async def rate_limit_health() -> Dict[str, Any]:
@@ -57,9 +63,10 @@ async def rate_limit_health() -> Dict[str, Any]:
             "current_usage": stats,
             "message": "Rate limiting system is operational"
         }
-    except Exception as e:
+    except Exception:
+        logger.exception("Rate limiting health check failed")
         return {
             "status": "unhealthy",
-            "error": str(e),
+            "error": "Rate limiting system unavailable",
             "message": "Rate limiting system has issues"
         }
