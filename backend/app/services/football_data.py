@@ -143,10 +143,10 @@ class FootballDataService:
                 elapsed = (datetime.now(timezone.utc) - match_date).total_seconds() / 60
                 if elapsed <= 52:
                     # First half — subtract ~3 min for pre-kick delay
-                    minute = max(1, int(elapsed) - 3)
+                    minute = max(1, min(45, int(elapsed) - 3))
                 else:
-                    # Second half — subtract ~15 min halftime + ~3 min pre-kick delay
-                    minute = max(46, int(elapsed - 18))
+                    # Second half — subtract ~15 min halftime + ~3 min pre-kick delay, cap at 90
+                    minute = max(46, min(90, int(elapsed - 18)))
             except Exception:
                 pass
 
