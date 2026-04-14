@@ -469,6 +469,13 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
     setSelectedTie(null);
   }, [competition, initialView]);
 
+  // Auto-refresh bracket every 60s so it picks up finished legs without manual reload
+  useEffect(() => {
+    if (!isChampionsLeague || view !== 'bracket') return;
+    const id = setInterval(load, 60000);
+    return () => clearInterval(id);
+  }, [isChampionsLeague, view, load]);
+
   if (loading) {
     return (
       <div className="glass-effect rounded-2xl overflow-hidden">

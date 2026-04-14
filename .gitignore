@@ -270,4 +270,5 @@ $RECYCLE.BIN/
 *.vsix
 
 .claude/
+/src/
 backend/.gitignore
