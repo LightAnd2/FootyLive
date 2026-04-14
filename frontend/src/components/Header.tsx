@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -22,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading, wsConn
         <div className="flex items-center justify-between gap-4">
 
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <h1
               className="text-2xl sm:text-3xl font-black leading-none"
               style={{ fontFamily: 'Orbitron, monospace' }}
@@ -37,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading, wsConn
             <span className="hidden sm:inline text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-white/15 px-2 py-0.5 rounded">
               Live Tracker
             </span>
-          </div>
+          </Link>
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
