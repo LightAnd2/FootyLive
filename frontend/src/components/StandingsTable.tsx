@@ -67,13 +67,13 @@ const createPlaceholderTie = (id: number, stage: string): BracketTie => ({
 });
 
 const hasResolvedTeams = (tie?: BracketTie | null) =>
-  Boolean(
-    tie
-    && tie.home_team?.id
-    && tie.away_team?.id
-    && tie.home_team.name !== 'TBD'
-    && tie.away_team.name !== 'TBD',
-  );
+  Boolean(tie && (tie.home_team?.id || tie.away_team?.id));
+
+const normaliseTie = (tie: BracketTie): BracketTie => ({
+  ...tie,
+  home_team: tie.home_team?.id ? tie.home_team : { id: 0, name: 'TBD', tla: 'TBD', crest: '' },
+  away_team: tie.away_team?.id ? tie.away_team : { id: 0, name: 'TBD', tla: 'TBD', crest: '' },
+});
 
 const bracketColumns = ['LAST_16', 'QUARTER_FINALS', 'SEMI_FINALS', 'FINAL'] as const;
 
@@ -127,9 +127,9 @@ const splitBracket = (rounds: BracketRound[]) => {
     rightLast16,
     leftQuarterFinals,
     rightQuarterFinals,
-    leftSemiFinal: [hasResolvedTeams(semiFinals[0]) ? semiFinals[0] : createPlaceholderTie(-101, 'SEMI_FINALS')],
-    rightSemiFinal: [hasResolvedTeams(semiFinals[1]) ? semiFinals[1] : createPlaceholderTie(-102, 'SEMI_FINALS')],
-    finalTie: hasResolvedTeams(final[0]) ? final[0] : createPlaceholderTie(-103, 'FINAL'),
+    leftSemiFinal: [hasResolvedTeams(semiFinals[0]) ? normaliseTie(semiFinals[0]) : createPlaceholderTie(-101, 'SEMI_FINALS')],
+    rightSemiFinal: [hasResolvedTeams(semiFinals[1]) ? normaliseTie(semiFinals[1]) : createPlaceholderTie(-102, 'SEMI_FINALS')],
+    finalTie: hasResolvedTeams(final[0]) ? normaliseTie(final[0]) : createPlaceholderTie(-103, 'FINAL'),
   };
 };
 
