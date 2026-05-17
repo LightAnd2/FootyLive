@@ -6,7 +6,7 @@ from app.models.player import Player
 from app.schemas.player import Player as PlayerSchema
 from app.services.player_service import PlayerService
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 @router.get("/", response_model=List[PlayerSchema])
 async def get_players(

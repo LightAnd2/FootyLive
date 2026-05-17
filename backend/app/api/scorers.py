@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Query, HTTPException
 from app.services.football_data import football_data_service
 from app.core.competitions import normalize_competition_code
+from app.core.cache import cache_get, cache_set
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 @router.get("/")
@@ -12,6 +13,11 @@ async def get_top_scorers(
 ):
     """Get top scorers with goals and assists for a competition."""
     code = normalize_competition_code(competition)
+    cache_key = f"scorers:{code}:{limit}"
+    cached = await cache_get(cache_key)
+    if cached:
+        return cached
+
     data = await football_data_service._get(
         f"/competitions/{code}/scorers",
         params={"limit": limit},
@@ -20,7 +26,7 @@ async def get_top_scorers(
         raise HTTPException(status_code=502, detail="Failed to fetch scorers")
 
     scorers = data.get("scorers", [])
-    return {
+    result = {
         "season": data.get("season", {}),
         "scorers": [
             {
@@ -45,3 +51,5 @@ async def get_top_scorers(
             for i, s in enumerate(scorers)
         ],
     }
+    await cache_set(cache_key, result, ttl=300)
+    return result

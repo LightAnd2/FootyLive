@@ -3,8 +3,9 @@ from typing import Any, Dict, List, Optional
 
 from app.services.football_data import football_data_service
 from app.core.competitions import DEFAULT_COMPETITION_CODE, normalize_competition_code
+from app.core.cache import cache_get, cache_set
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 KNOCKOUT_STAGES = [
     "KNOCKOUT_ROUND_PLAY_OFFS",
@@ -50,6 +51,10 @@ def _fmt_match(m: dict) -> dict:
 @router.get("/cl-bracket")
 async def get_cl_bracket():
     """Champions League knockout bracket from football-data.org free tier."""
+    cached = await cache_get("cl-bracket")
+    if cached:
+        return cached
+
     data = await football_data_service._get("/competitions/CL/matches")
     if not data:
         raise HTTPException(status_code=502, detail="Failed to fetch CL matches")
@@ -66,7 +71,9 @@ async def get_cl_bracket():
                 "matches": [_fmt_match(m) for m in sorted(stage_matches, key=lambda x: x.get("utcDate", ""))],
             })
 
-    return {"bracket": bracket}
+    result = {"bracket": bracket}
+    await cache_set("cl-bracket", result, ttl=300)
+    return result
 
 
 
@@ -85,7 +92,6 @@ def _normalize_standings_payload(data: dict) -> Dict[str, Any]:
         elif s.get("type") == "TOTAL" and table:
             main_table = table
 
-    # Avoid duplicating the first CL group as both "main" and group tables
     if not main_table and standings and not groups_out:
         main_table = standings[0].get("table") or []
 
@@ -105,10 +111,16 @@ async def get_standings(
 ):
     """Standings for a competition (Premier League, Champions League, etc.)."""
     code = normalize_competition_code(competition)
+    cache_key = f"standings:{code}"
+    cached = await cache_get(cache_key)
+    if cached:
+        return cached
+
     data = await football_data_service._get(f"/competitions/{code}/standings")
     if not data:
         raise HTTPException(status_code=502, detail="Failed to fetch standings")
 
     payload = _normalize_standings_payload(data)
     payload["competition"] = {"code": code}
+    await cache_set(cache_key, payload, ttl=300)
     return payload

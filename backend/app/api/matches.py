@@ -8,7 +8,7 @@ from app.services.football_data import football_data_service
 from app.services.match_service import MatchService
 from app.core.competitions import MAIN_LEAGUE_CODES, normalize_competition_code
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 @router.get("/live", response_model=List[MatchSchema])

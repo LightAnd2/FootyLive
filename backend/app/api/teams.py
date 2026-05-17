@@ -9,7 +9,7 @@ from app.core.config import settings
 from app.core.competitions import normalize_competition_code
 import httpx
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 def _format_team_detail(team_data: dict) -> dict:

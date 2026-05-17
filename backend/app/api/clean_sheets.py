@@ -5,7 +5,7 @@ from app.models.match import Match
 from app.models.team import Team
 from app.core.competitions import normalize_competition_code
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 @router.get("/")
