@@ -18,6 +18,7 @@ const ZONES: Record<LeagueCode, (pos: number, total: number) => Zone> = {
   SA:  (p, t) => p <= 4 ? 'ucl' : p <= 6 ? 'uel' : p === 7 ? 'uecl' : p > t - 3 ? 'relegation' : null,
   PD:  (p, t) => p <= 4 ? 'ucl' : p <= 6 ? 'uel' : p === 7 ? 'uecl' : p > t - 3 ? 'relegation' : null,
   CL:  () => null,
+  WC:  () => null,
 };
 
 const ZONE_STYLE: Record<NonNullable<Zone>, { border: string; label: string; dot: string }> = {
@@ -542,6 +543,30 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                       compact
                       showFooter={false}
                     />
+                    {bracketSides.finalTie.score.winner && bracketSides.finalTie.score.winner !== null && (() => {
+                      const champion = bracketSides.finalTie.score.winner === 'HOME_TEAM'
+                        ? bracketSides.finalTie.home_team
+                        : bracketSides.finalTie.away_team;
+                      return (
+                        <div className="mt-3 flex flex-col items-center gap-1.5">
+                          <span className="inline-flex items-center justify-center">
+                            <img
+                              src="/ucl-trophy.png"
+                              alt="Trophy"
+                              className="h-10 w-auto object-contain drop-shadow-lg"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+                                if (fallback) fallback.style.display = 'inline';
+                              }}
+                            />
+                            <span className="text-2xl" style={{ display: 'none' }}>🏆</span>
+                          </span>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-yellow-400">Champion</p>
+                          <p className="text-center text-xs font-bold text-white">{champion.name}</p>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
@@ -635,7 +660,7 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                   className={`px-4 py-2 text-xs sm:text-sm font-semibold transition-colors ${
                     view === option ? 'text-[#0d1117]' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
                   }`}
-                  style={view === option ? { backgroundColor: 'var(--league-accent)' } : undefined}
+                  style={view === option ? { backgroundColor: 'var(--league-accent-bright)' } : undefined}
                 >
                   {option === 'table' ? 'League Table' : 'Knockout Bracket'}
                 </button>
@@ -670,30 +695,30 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                       <th className="px-4 py-3 text-center hidden sm:table-cell">GF</th>
                       <th className="px-4 py-3 text-center hidden sm:table-cell">GA</th>
                       <th className="px-4 py-3 text-center">GD</th>
-                      <th className="px-4 py-3 text-center font-black text-slate-200">Pts</th>
+                      <th className="px-4 py-3 text-center font-black" style={{ color: 'var(--league-accent-bright)' }}>Pts</th>
                     </tr>
                   </thead>
                   <tbody>
                     {group.table.map((row) => (
                       <tr key={row.team.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                        <td className="px-4 py-3"><span className="font-bold text-slate-400">{row.position}</span></td>
+                        <td className="px-4 py-3"><span className="font-bold text-slate-300">{row.position}</span></td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <img src={row.team.crest} alt="" className="w-5 h-5 object-contain shrink-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                            <span className="font-semibold text-slate-200 hidden sm:inline truncate">{row.team.name}</span>
-                            <span className="font-semibold text-slate-200 sm:hidden">{row.team.tla}</span>
+                            <span className="font-semibold text-white hidden sm:inline truncate">{row.team.name}</span>
+                            <span className="font-semibold text-white sm:hidden">{row.team.tla}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.playedGames}</td>
-                        <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.won}</td>
-                        <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.draw}</td>
-                        <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.lost}</td>
-                        <td className="px-4 py-3 text-center text-slate-400 tabular-nums hidden sm:table-cell">{row.goalsFor}</td>
-                        <td className="px-4 py-3 text-center text-slate-400 tabular-nums hidden sm:table-cell">{row.goalsAgainst}</td>
-                        <td className="px-4 py-3 text-center text-slate-400 tabular-nums">
+                        <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.playedGames}</td>
+                        <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.won}</td>
+                        <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.draw}</td>
+                        <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.lost}</td>
+                        <td className="px-4 py-3 text-center text-slate-200 tabular-nums hidden sm:table-cell">{row.goalsFor}</td>
+                        <td className="px-4 py-3 text-center text-slate-200 tabular-nums hidden sm:table-cell">{row.goalsAgainst}</td>
+                        <td className="px-4 py-3 text-center text-slate-200 tabular-nums">
                           {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
                         </td>
-                        <td className="px-4 py-3 text-center font-black text-white text-base tabular-nums">{row.points}</td>
+                        <td className="px-4 py-3 text-center font-black text-base tabular-nums" style={{ color: 'var(--league-accent-bright)' }}>{row.points}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -729,7 +754,7 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                   className={`border-b border-white/5 hover:bg-white/5 transition-colors ${zoneStyle}`}
                 >
                   <td className="px-4 py-3">
-                    <span className="font-bold text-slate-400">{row.position}</span>
+                    <span className="font-bold text-slate-300">{row.position}</span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -739,17 +764,17 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                         className="w-5 h-5 object-contain shrink-0"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
-                      <span className="font-semibold text-slate-200 hidden sm:inline truncate">{row.team.name}</span>
-                      <span className="font-semibold text-slate-200 sm:hidden">{row.team.tla}</span>
+                      <span className="font-semibold text-white hidden sm:inline truncate">{row.team.name}</span>
+                      <span className="font-semibold text-white sm:hidden">{row.team.tla}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.playedGames}</td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.won}</td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.draw}</td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums">{row.lost}</td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums hidden sm:table-cell">{row.goalsFor}</td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums hidden sm:table-cell">{row.goalsAgainst}</td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums">
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.playedGames}</td>
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.won}</td>
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.draw}</td>
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums">{row.lost}</td>
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums hidden sm:table-cell">{row.goalsFor}</td>
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums hidden sm:table-cell">{row.goalsAgainst}</td>
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums">
                     {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
                   </td>
                   <td className="px-4 py-3 text-center hidden lg:table-cell">
@@ -773,7 +798,7 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                         })}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-center font-black text-white text-base tabular-nums">{row.points}</td>
+                  <td className="px-4 py-3 text-center font-black text-base tabular-nums" style={{ color: 'var(--league-accent-bright)' }}>{row.points}</td>
                 </tr>
                 );
               })}

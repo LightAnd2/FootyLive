@@ -54,7 +54,7 @@ const ScorersTable: React.FC<ScorersTableProps> = ({ competition }) => {
               className={`flex-1 sm:flex-none px-4 py-2 text-xs sm:text-sm font-semibold transition-colors ${
                 view === key ? 'text-[#0d1117]' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
               }`}
-              style={view === key ? { backgroundColor: 'var(--league-accent)' } : undefined}
+              style={view === key ? { backgroundColor: 'var(--league-accent-bright)' } : undefined}
             >
               {label}
             </button>
@@ -80,26 +80,26 @@ const ScorersTable: React.FC<ScorersTableProps> = ({ competition }) => {
                 <tr key={row.player.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                   <td className="px-4 py-3 font-bold text-slate-500 tabular-nums">{idx + 1}</td>
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-slate-200">{row.player.name}</p>
+                    <p className="font-semibold text-white">{row.player.name}</p>
                     <p className="text-xs text-slate-500 sm:hidden">{row.team.tla}</p>
                   </td>
                   <td className="px-4 py-3 hidden sm:table-cell">
                     <div className="flex items-center gap-2">
                       <img src={row.team.crest} alt="" className="w-5 h-5 object-contain"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                      <span className="text-slate-400 font-medium">{row.team.name}</span>
+                      <span className="text-slate-300 font-medium">{row.team.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums hidden md:table-cell">
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums hidden md:table-cell">
                     {row.playedMatches ?? '-'}
                   </td>
-                  <td className="px-4 py-3 text-center text-slate-400 tabular-nums hidden md:table-cell">
+                  <td className="px-4 py-3 text-center text-slate-200 tabular-nums hidden md:table-cell">
                     {row.penalties}
                   </td>
                   <td className="px-4 py-3 text-center tabular-nums">
                     <span
                       className={`font-black text-lg ${view === 'goals' ? '' : 'text-slate-400'}`}
-                      style={view === 'goals' ? { color: 'var(--league-accent)' } : undefined}
+                      style={view === 'goals' ? { color: 'var(--league-accent-bright)' } : undefined}
                     >
                       {row.goals}
                     </span>

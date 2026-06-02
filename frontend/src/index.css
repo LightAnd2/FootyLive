@@ -9,7 +9,7 @@
     --league-accent: #00ff85;
     --league-accent-soft: rgba(0, 255, 133, 0.16);
     --league-accent-text: #00ff85;
-    --league-page-background: linear-gradient(135deg, #1a0020 0%, #006640 25%, #016b6e 50%, #006640 75%, #1a0020 100%);
+    --league-page-background: linear-gradient(135deg, #1b0423 0%, #2c0939 22%, #014a37 50%, #00694c 72%, #3a0814 92%, #14031d 100%);
     --league-stripe-color: rgba(0, 180, 90, 0.12);
     --league-line-color: rgba(255,255,255,0.42);
     --league-ring-color: rgba(255,255,255,0.18);
@@ -275,7 +275,7 @@
 
   /* Panels, header, tables */
   .glass-effect {
-    @apply bg-black/35 backdrop-blur-md border border-white/15;
+    @apply bg-black/60 backdrop-blur-md border border-white/15;
   }
 
   /* Status badges */
@@ -310,8 +310,105 @@
   .scrollbar-hide::-webkit-scrollbar { display: none; }
 }
 
+/* Bright image-background leagues — drop the dark glass navbar */
+:root[data-league='PL'] header,
+:root[data-league='FL1'] header,
+:root[data-league='BL1'] header,
+:root[data-league='PD'] header,
+:root[data-league='SA'] header,
+:root[data-league='CL'] header,
+:root[data-league='WC'] header {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Ligue 1 image has a dark navy top-left corner — keep the FootyLive logo readable */
+:root[data-league='FL1'] header h1 span {
+  color: #ffffff !important;
+}
+
 @keyframes score-bounce {
   0%  { transform: scale(1); }
   40% { transform: scale(1.25); }
   100%{ transform: scale(1.05); }
+}
+
+/* ===== League background scene ===== */
+@keyframes beam-sweep {
+  0%   { transform: rotate(var(--beam-from, -14deg)); opacity: 0.55; }
+  50%  { transform: rotate(var(--beam-to, 10deg));    opacity: 0.9; }
+  100% { transform: rotate(var(--beam-from, -14deg)); opacity: 0.55; }
+}
+
+@keyframes glow-breathe {
+  0%,100% { opacity: 0.7; transform: scale(1); }
+  50%     { opacity: 1;   transform: scale(1.06); }
+}
+
+@keyframes particle-rise {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  12%  { opacity: var(--p-opacity, 0.7); }
+  85%  { opacity: var(--p-opacity, 0.7); }
+  100% { transform: translateY(-115vh) translateX(var(--p-drift, 20px)); opacity: 0; }
+}
+
+@keyframes haze-drift {
+  0%   { transform: translateX(-4%) translateY(0); }
+  50%  { transform: translateX(4%) translateY(-2%); }
+  100% { transform: translateX(-4%) translateY(0); }
+}
+
+@keyframes twinkle {
+  0%,100% { opacity: 0.25; }
+  50%     { opacity: 1; }
+}
+
+@keyframes beam-glow {
+  0%,100% { opacity: 0.32; }
+  50%     { opacity: 0.62; }
+}
+
+@keyframes sway {
+  0%,100% { transform: translateX(0); }
+  50%     { transform: translateX(var(--sway, 14px)); }
+}
+
+/* Camera flash popping in the crowd — brief bright spike, dark the rest of the cycle */
+@keyframes cam-flash {
+  0%, 100% { opacity: 0; transform: scale(0.6); }
+  3%       { opacity: 1; transform: scale(1.6); }
+  9%       { opacity: 0; transform: scale(0.6); }
+}
+
+/* Soccer ball flight — struck ball arcing across the pitch with spin */
+@keyframes ball-fly-r {
+  0%   { transform: translate(-10vw, 0) rotate(0deg);      opacity: 0; }
+  7%   { opacity: 1; }
+  50%  { transform: translate(52vw, -28vh) rotate(900deg); }
+  93%  { opacity: 1; }
+  100% { transform: translate(114vw, 6vh) rotate(1800deg); opacity: 0; }
+}
+
+@keyframes ball-fly-l {
+  0%   { transform: translate(10vw, 0) rotate(0deg);        opacity: 0; }
+  7%   { opacity: 1; }
+  50%  { transform: translate(-48vw, -18vh) rotate(-720deg); }
+  93%  { opacity: 1; }
+  100% { transform: translate(-112vw, 8vh) rotate(-1500deg); opacity: 0; }
+}
+
+@keyframes ball-roll {
+  0%   { transform: translateX(-10vw) rotate(0deg);   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(112vw) rotate(1440deg); opacity: 0; }
+}
+
+.scene-layer { will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-layer { animation: none !important; }
 }

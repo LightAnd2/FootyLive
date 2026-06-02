@@ -63,7 +63,7 @@ const TeamsDirectory: React.FC<TeamsDirectoryProps> = ({ competition }) => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search clubs…"
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-white/40 bg-white/50 text-slate-900 placeholder:text-slate-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#00ff85]/50"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-white/40 bg-white/50 text-slate-900 placeholder:text-slate-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[color:var(--league-accent-bright)]"
           />
         </div>
       </div>
@@ -74,7 +74,7 @@ const TeamsDirectory: React.FC<TeamsDirectoryProps> = ({ competition }) => {
             key={team.id}
             type="button"
             onClick={() => setSelectedId(team.id)}
-            className="glass-effect rounded-xl p-4 text-left transition-all hover:ring-2 hover:ring-[#00ff85]/40 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-[#00ff85]/60"
+            className="glass-effect rounded-xl p-4 text-left transition-all hover:ring-2 hover:ring-[color:var(--league-accent-bright)] hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-[color:var(--league-accent-bright)]"
           >
             <div className="flex flex-col items-center text-center gap-2">
               {team.logo ? (

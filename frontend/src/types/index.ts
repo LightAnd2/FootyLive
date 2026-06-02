@@ -68,6 +68,8 @@ export interface Match {
   away_team_id: number;
   home_score: number;
   away_score: number;
+  penalty_home?: number | null;
+  penalty_away?: number | null;
   status: 'scheduled' | 'live' | 'half_time' | 'full_time' | 'postponed' | 'cancelled';
   minute?: number;
   venue?: string;

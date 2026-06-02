@@ -31,47 +31,47 @@ const MatchTabs: React.FC<MatchTabsProps> = ({
   if (showTeamsTab) visibleTabs.push({ id: 'teams' as MatchStatus, label: 'Teams' });
 
   return (
-    <div className="mb-6 flex justify-center">
-      <div className="glass-effect rounded-2xl px-2 py-1 inline-flex max-w-full overflow-x-auto scrollbar-hide">
-        <nav className="flex items-center justify-center gap-1 min-w-max">
+    <div className="mb-6 border-b border-white/10">
+      <nav className="flex items-center justify-start sm:justify-center gap-4 sm:gap-7 overflow-x-auto scrollbar-hide -mb-px px-1">
         {visibleTabs.map(({ id, label, liveOnly }) => {
           const isActive = activeTab === id;
-          const count = counts[id] ?? 0;
+          const count = id === 'results' ? 0 : counts[id] ?? 0;
+          const isLiveActive = liveOnly && count > 0;
 
           return (
             <button
               key={id}
               onClick={() => onTabChange(id)}
-              className={`relative flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-150 whitespace-nowrap leading-none ${
-                isActive
-                  ? 'text-[#0d1117] shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-white/10'
+              className={`group relative flex items-center gap-1.5 pt-1 pb-3 text-xs sm:text-[13px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors duration-150 ${
+                isActive ? '' : 'text-slate-500 hover:text-slate-200'
               }`}
-              style={
-                isActive
-                  ? {
-                      backgroundColor: 'var(--league-accent)',
-                      boxShadow: '0 10px 25px var(--league-accent-soft)',
-                    }
-                  : undefined
-              }
+              style={isActive ? { color: 'var(--league-accent)' } : undefined}
             >
-              {liveOnly && count > 0 && (
-                <span className={`w-2 h-2 rounded-full animate-pulse ${isActive ? 'bg-[#0d1117]' : 'bg-red-500'}`} />
+              {isLiveActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
               )}
-              <span className="leading-none">{label}</span>
+              <span>{label}</span>
               {count > 0 && (
-                <span className={`px-1.5 py-0.5 rounded-md text-xs font-bold leading-none ${
-                  isActive ? 'bg-[#0d1117]/20 text-[#0d1117]' : 'bg-white/10 text-slate-400'
-                }`}>
+                <span
+                  className="text-[11px] font-extrabold tabular-nums transition-colors"
+                  style={{ color: isActive ? 'var(--league-accent)' : undefined }}
+                >
                   {count}
                 </span>
               )}
+              <span
+                className={`absolute left-0 right-0 -bottom-px h-[2px] rounded-full transition-all duration-200 ${
+                  isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-30'
+                }`}
+                style={{
+                  backgroundColor: 'var(--league-accent)',
+                  boxShadow: isActive ? '0 0 12px var(--league-accent-soft)' : 'none',
+                }}
+              />
             </button>
           );
         })}
-        </nav>
-      </div>
+      </nav>
     </div>
   );
 };

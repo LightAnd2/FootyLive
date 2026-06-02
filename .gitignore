@@ -121,7 +121,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public  <- disabled: this is a Vite app; frontend/public holds source static assets (logos, backgrounds, favicon)
 
 # Storybook build outputs
 .out

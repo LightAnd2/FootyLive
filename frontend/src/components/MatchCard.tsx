@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Match } from '../types';
 import { format } from 'date-fns';
 import { Star } from 'lucide-react';
+import { LEAGUE_MAP, type LeagueCode } from '../constants/leagues';
 
 interface MatchCardProps {
   match: Match;
@@ -10,16 +11,7 @@ interface MatchCardProps {
 }
 
 const COMP_SHORT: Record<string, string> = {
-  PL: 'PL', CL: 'UCL', BL1: 'BUN', PD: 'LAL', SA: 'SA', FL1: 'L1',
-};
-
-const COMP_STYLES: Record<string, string> = {
-  PL: 'bg-[rgba(0,255,133,0.12)] text-[#00ff85]',
-  BL1: 'bg-[rgba(255,48,72,0.12)] text-[#ff6678]',
-  FL1: 'bg-[rgba(22,217,255,0.12)] text-[#69e7ff]',
-  SA: 'bg-[rgba(47,128,255,0.12)] text-[#77acff]',
-  PD: 'bg-[rgba(255,138,0,0.12)] text-[#ffb45c]',
-  CL: 'bg-[rgba(47,128,255,0.12)] text-[#77acff]',
+  PL: 'PL', CL: 'UCL', BL1: 'BUN', PD: 'LAL', SA: 'SA', FL1: 'L1', WC: 'WC',
 };
 
 const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }) => {
@@ -31,6 +23,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }
 
   const compCode  = match.competition_code ?? 'PL';
   const compLabel = COMP_SHORT[compCode] ?? compCode;
+  const compTheme = LEAGUE_MAP[compCode as LeagueCode];
 
   const statusNode = () => {
     if (isHT)   return <span className="text-orange-400 font-bold text-xs">HT</span>;
@@ -44,8 +37,9 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }
     return <span className="text-slate-400 font-medium text-xs">{format(new Date(match.match_date), 'HH:mm')}</span>;
   };
 
-  const homeWon  = isFT && match.home_score > match.away_score;
-  const awayWon  = isFT && match.away_score > match.home_score;
+  const hasPens  = isFT && match.penalty_home != null && match.penalty_away != null;
+  const homeWon  = isFT && (match.home_score > match.away_score || (hasPens && match.penalty_home! > match.penalty_away!));
+  const awayWon  = isFT && (match.away_score > match.home_score || (hasPens && match.penalty_away! > match.penalty_home!));
   const showScore = isFT || isLiveAny;
 
   const events      = match.events ?? [];
@@ -68,9 +62,20 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }
 
       {/* Top strip */}
       <div className="flex items-center justify-between px-4 pt-3.5 pb-2.5 border-b border-white/5">
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-          COMP_STYLES[compCode] ?? 'bg-white/10 text-slate-300'
-        }`}>
+        <span
+          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded"
+          style={compTheme
+            ? { color: compTheme.accentBright, backgroundColor: compTheme.accentBrightSoft }
+            : undefined}
+        >
+          {compTheme?.emblem && (
+            <img
+              src={compTheme.emblem}
+              alt=""
+              className="w-3 h-3 object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          )}
           {compLabel}
         </span>
         <div>{statusNode()}</div>
@@ -113,6 +118,12 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }
             </span>
           )}
         </div>
+
+        {hasPens && (
+          <p className="text-[11px] text-slate-500 text-right tabular-nums">
+            ({match.penalty_home}–{match.penalty_away} pens)
+          </p>
+        )}
       </div>
 
       {/* Footer */}
@@ -121,7 +132,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }
           {format(new Date(match.match_date), 'dd MMM')}
         </span>
         <div className="flex items-center gap-3">
-          {match.matchday && match.competition_code !== 'CL' ? (
+          {match.matchday && match.competition_code !== 'CL' && match.competition_code !== 'WC' ? (
             <span className="text-[11px] text-slate-600">MW {match.matchday}</span>
           ) : null}
 

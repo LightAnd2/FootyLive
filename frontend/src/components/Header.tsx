@@ -1,16 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
-import { format } from 'date-fns';
+import { RefreshCw } from 'lucide-react';
 
 interface HeaderProps {
-  lastUpdated: Date;
   onRefresh: () => void;
   loading: boolean;
-  wsConnected: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading, wsConnected }) => {
+const Header: React.FC<HeaderProps> = ({ onRefresh, loading }) => {
   return (
     <header className="sticky top-0 z-50 glass-effect shadow-lg shadow-black/30">
       {/* Green accent line */}
@@ -28,10 +25,7 @@ const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading, wsConn
               className="text-2xl sm:text-3xl font-black leading-none"
               style={{ fontFamily: 'Orbitron, monospace' }}
             >
-              <span
-                className="bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(90deg, var(--league-accent) 0%, #ffffff 50%, var(--league-accent) 100%)' }}
-              >
+              <span style={{ color: 'var(--league-accent)' }}>
                 FootyLive
               </span>
             </h1>
@@ -42,31 +36,16 @@ const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading, wsConn
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
-            {/* WS status */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/10">
-              {wsConnected
-                ? <Wifi className="w-3.5 h-3.5 text-green-400" />
-                : <WifiOff className="w-3.5 h-3.5 text-yellow-400" />
-              }
-              <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-green-500 animate-pulse' : 'bg-yellow-400'}`} />
-              <span className={`text-xs font-semibold hidden sm:inline ${wsConnected ? 'text-green-400' : 'text-yellow-400'}`}>
-                {wsConnected ? 'Live' : 'Reconnecting'}
-              </span>
-            </div>
-
-            {/* Last updated — desktop only */}
-            <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 border border-white/10">
-              <span className="text-xs text-slate-400 font-medium tabular-nums">
-                {format(lastUpdated, 'HH:mm:ss')}
-              </span>
-            </div>
-
             {/* Refresh */}
             <button
               onClick={onRefresh}
               disabled={loading}
-              className="btn btn-primary py-1.5 px-3 text-xs"
-              style={{ backgroundColor: 'var(--league-accent)' }}
+              className="inline-flex items-center rounded-lg py-1.5 px-3 text-xs font-semibold transition-all hover:opacity-80 disabled:opacity-50 disabled:pointer-events-none"
+              style={{
+                color: 'var(--league-accent)',
+                backgroundColor: 'var(--league-accent-soft)',
+                border: '1px solid var(--league-accent-soft)',
+              }}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline ml-1.5">Refresh</span>

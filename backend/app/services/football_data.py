@@ -121,6 +121,19 @@ class FootballDataService:
     def parse_match_data(self, match_data: Dict[str, Any]) -> Dict[str, Any]:
         score = match_data.get("score", {})
         full_time = score.get("fullTime") or {}
+        penalties = score.get("penalties") or {}
+
+        # When a match is decided on penalties, the API folds the shootout
+        # tally into `fullTime` (e.g. 1-1 + 4-3 pens => 5-4). Strip it back out
+        # so the displayed score is the open-play result and expose the
+        # shootout score separately.
+        home_score = full_time.get("home") or 0
+        away_score = full_time.get("away") or 0
+        penalty_home = penalties.get("home")
+        penalty_away = penalties.get("away")
+        if penalty_home is not None and penalty_away is not None:
+            home_score -= penalty_home
+            away_score -= penalty_away
 
         status_raw = match_data.get("status", "SCHEDULED")
         status = STATUS_MAP.get(status_raw, "scheduled")
@@ -153,8 +166,10 @@ class FootballDataService:
         competition = match_data.get("competition") or {}
         return {
             "external_id": match_data.get("id"),
-            "home_score": full_time.get("home") or 0,
-            "away_score": full_time.get("away") or 0,
+            "home_score": home_score,
+            "away_score": away_score,
+            "penalty_home": penalty_home,
+            "penalty_away": penalty_away,
             "status": status,
             "minute": minute,
             "venue": match_data.get("venue") or "",

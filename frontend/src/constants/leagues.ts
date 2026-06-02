@@ -1,12 +1,16 @@
-export type LeagueCode = 'PL' | 'BL1' | 'FL1' | 'SA' | 'PD' | 'CL';
+export type LeagueCode = 'PL' | 'BL1' | 'FL1' | 'SA' | 'PD' | 'CL' | 'WC';
 
 export interface LeagueTheme {
   code: LeagueCode;
   name: string;
   shortName: string;
+  emblem: string;
   accent: string;
   accentSoft: string;
   accentText: string;
+  /** Lightened accent that stays legible on dark glass (cards, tables, inputs). */
+  accentBright: string;
+  accentBrightSoft: string;
   titleGradient: string;
   pageBackground: string;
   stripeColor: string;
@@ -19,11 +23,14 @@ export const LEAGUES: LeagueTheme[] = [
     code: 'PL',
     name: 'Premier League',
     shortName: 'PL',
-    accent: '#00ff85',
-    accentSoft: 'rgba(0, 255, 133, 0.16)',
-    accentText: '#00ff85',
-    titleGradient: 'linear-gradient(90deg, #ffffff 0%, #00ff85 50%, #ffffff 100%)',
-    pageBackground: 'linear-gradient(135deg, #1a0020 0%, #006640 25%, #016b6e 50%, #006640 75%, #1a0020 100%)',
+    emblem: '/prem_logo.cc.png',
+    accent: '#3d195b',
+    accentSoft: 'rgba(61, 25, 91, 0.16)',
+    accentText: '#3d195b',
+    accentBright: '#c4a3f0',
+    accentBrightSoft: 'rgba(196, 163, 240, 0.14)',
+    titleGradient: 'linear-gradient(90deg, #3d195b 0%, #3d195b 50%, #3d195b 100%)',
+    pageBackground: 'linear-gradient(135deg, #1b0423 0%, #2c0939 22%, #014a37 50%, #00694c 72%, #3a0814 92%, #14031d 100%)',
     stripeColor: 'rgba(0, 180, 90, 0.12)',
     lineColor: 'rgba(255,255,255,0.42)',
     ringColor: 'rgba(255,255,255,0.18)',
@@ -32,12 +39,15 @@ export const LEAGUES: LeagueTheme[] = [
     code: 'BL1',
     name: 'Bundesliga',
     shortName: 'BUN',
-    accent: '#e24b5b',
-    accentSoft: 'rgba(226, 75, 91, 0.16)',
-    accentText: '#f08b95',
-    titleGradient: 'linear-gradient(90deg, #f2f4f5 0%, #e24b5b 42%, #c8ced4 100%)',
-    pageBackground: 'linear-gradient(135deg, #0d1014 0%, #232a31 28%, #3e474f 52%, #611f2d 76%, #12151b 100%)',
-    stripeColor: 'rgba(226, 75, 91, 0.08)',
+    emblem: '/bundesliga_logo.png',
+    accent: '#d20515',
+    accentSoft: 'rgba(210, 5, 21, 0.16)',
+    accentText: '#d20515',
+    accentBright: '#ff5d6c',
+    accentBrightSoft: 'rgba(255, 93, 108, 0.14)',
+    titleGradient: 'linear-gradient(90deg, #d20515 0%, #d20515 50%, #d20515 100%)',
+    pageBackground: 'linear-gradient(145deg, #0c0c0d 0%, #34060b 24%, #9d0c19 50%, #cf1020 62%, #5a4710 86%, #0a0a0b 100%)',
+    stripeColor: 'rgba(226, 75, 91, 0.1)',
     lineColor: 'rgba(223,228,232,0.32)',
     ringColor: 'rgba(214,220,224,0.12)',
   },
@@ -45,11 +55,14 @@ export const LEAGUES: LeagueTheme[] = [
     code: 'FL1',
     name: 'Ligue 1',
     shortName: 'L1',
-    accent: '#16d9ff',
-    accentSoft: 'rgba(22, 217, 255, 0.16)',
-    accentText: '#69e7ff',
-    titleGradient: 'linear-gradient(90deg, #edf8ff 0%, #16d9ff 45%, #93efff 100%)',
-    pageBackground: 'linear-gradient(135deg, #051421 0%, #0c2b43 24%, #0e5a83 48%, #15b2d6 76%, #03111b 100%)',
+    emblem: '/ligue1_logo.cc.png',
+    accent: '#13235b',
+    accentSoft: 'rgba(19, 35, 91, 0.16)',
+    accentText: '#13235b',
+    accentBright: '#6b8cff',
+    accentBrightSoft: 'rgba(107, 140, 255, 0.14)',
+    titleGradient: 'linear-gradient(90deg, #13235b 0%, #13235b 50%, #13235b 100%)',
+    pageBackground: 'linear-gradient(130deg, #05101f 0%, #082748 24%, #0b4f93 48%, #0f72ad 64%, #320a12 90%, #050c17 100%)',
     stripeColor: 'rgba(22, 217, 255, 0.12)',
     lineColor: 'rgba(207,244,255,0.38)',
     ringColor: 'rgba(182,239,255,0.16)',
@@ -58,11 +71,14 @@ export const LEAGUES: LeagueTheme[] = [
     code: 'SA',
     name: 'Serie A',
     shortName: 'SA',
-    accent: '#4b86d9',
-    accentSoft: 'rgba(75, 134, 217, 0.16)',
-    accentText: '#93b9f0',
-    titleGradient: 'linear-gradient(90deg, #eef4ff 0%, #4b86d9 48%, #d9e7fb 100%)',
-    pageBackground: 'linear-gradient(135deg, #08101c 0%, #12253f 24%, #193965 50%, #122b46 74%, #0a1422 100%)',
+    emblem: '/seriea_logo.cc.png',
+    accent: '#0a3d8f',
+    accentSoft: 'rgba(10, 61, 143, 0.16)',
+    accentText: '#0a3d8f',
+    accentBright: '#5b9bff',
+    accentBrightSoft: 'rgba(91, 155, 255, 0.14)',
+    titleGradient: 'linear-gradient(90deg, #0a3d8f 0%, #0a3d8f 50%, #0a3d8f 100%)',
+    pageBackground: 'linear-gradient(150deg, #03281a 0%, #053862 26%, #034196 50%, #0a356a 72%, #2c0810 100%)',
     stripeColor: 'rgba(75, 134, 217, 0.08)',
     lineColor: 'rgba(214,228,247,0.3)',
     ringColor: 'rgba(190,211,241,0.12)',
@@ -71,34 +87,61 @@ export const LEAGUES: LeagueTheme[] = [
     code: 'PD',
     name: 'La Liga',
     shortName: 'LAL',
-    accent: '#d38a35',
-    accentSoft: 'rgba(211, 138, 53, 0.16)',
-    accentText: '#e3b171',
-    titleGradient: 'linear-gradient(90deg, #fff1df 0%, #d38a35 42%, #e9c597 100%)',
-    pageBackground: 'linear-gradient(135deg, #1c0d12 0%, #3b1d2a 24%, #5c2e3f 48%, #6f4c2d 74%, #181017 100%)',
-    stripeColor: 'rgba(211, 138, 53, 0.08)',
-    lineColor: 'rgba(237,219,196,0.3)',
-    ringColor: 'rgba(222,197,165,0.12)',
+    emblem: '/laliga_logo.cc.png',
+    accent: '#e2231a',
+    accentSoft: 'rgba(226, 35, 26, 0.16)',
+    accentText: '#e2231a',
+    accentBright: '#ff6257',
+    accentBrightSoft: 'rgba(255, 98, 87, 0.14)',
+    titleGradient: 'linear-gradient(90deg, #e2231a 0%, #e2231a 50%, #e2231a 100%)',
+    pageBackground: 'linear-gradient(140deg, #1a070a 0%, #4c0f15 26%, #b3181f 50%, #c81230 62%, #6e5310 86%, #160608 100%)',
+    stripeColor: 'rgba(229, 75, 75, 0.1)',
+    lineColor: 'rgba(247,224,219,0.3)',
+    ringColor: 'rgba(241,200,190,0.12)',
   },
   {
     code: 'CL',
     name: 'Champions League',
     shortName: 'UCL',
+    emblem: 'https://crests.football-data.org/CL.png',
     accent: '#5aa6ff',
     accentSoft: 'rgba(90, 166, 255, 0.18)',
     accentText: '#8cc1ff',
-    titleGradient: 'linear-gradient(90deg, #ffffff 0%, #5aa6ff 45%, #d9e9ff 100%)',
+    accentBright: '#5aa6ff',
+    accentBrightSoft: 'rgba(90, 166, 255, 0.16)',
+    titleGradient: 'linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #ffffff 100%)',
     pageBackground: 'linear-gradient(135deg, #020714 0%, #0a1f4d 24%, #123d8c 50%, #0f2b61 76%, #01040c 100%)',
     stripeColor: 'rgba(90, 166, 255, 0.12)',
     lineColor: 'rgba(220,235,255,0.42)',
     ringColor: 'rgba(183,214,255,0.18)',
   },
+  {
+    code: 'WC',
+    name: 'World Cup',
+    shortName: 'WC',
+    emblem: '/worldcup_logo.png',
+    accent: '#c9a227',
+    accentSoft: 'rgba(201, 162, 39, 0.16)',
+    accentText: '#e3c35a',
+    accentBright: '#e8c766',
+    accentBrightSoft: 'rgba(232, 199, 102, 0.16)',
+    titleGradient: 'linear-gradient(90deg, #e8c766 0%, #c9a227 50%, #e8c766 100%)',
+    pageBackground: 'linear-gradient(135deg, #1a1405 0%, #3a2c08 24%, #6b5210 48%, #2a2208 72%, #0c0a03 100%)',
+    stripeColor: 'rgba(201, 162, 39, 0.1)',
+    lineColor: 'rgba(245,235,200,0.35)',
+    ringColor: 'rgba(232,210,150,0.14)',
+  },
 ];
 
 export const DEFAULT_LEAGUE: LeagueCode = 'PL';
 
-export const DOMESTIC_LEAGUES = LEAGUES.filter((league) => league.code !== 'CL');
-export const EUROPEAN_LEAGUES = LEAGUES.filter((league) => league.code === 'CL');
+const EUROPEAN_CODES: LeagueCode[] = ['CL'];
+const INTERNATIONAL_CODES: LeagueCode[] = ['WC'];
+const NON_DOMESTIC_CODES: LeagueCode[] = [...EUROPEAN_CODES, ...INTERNATIONAL_CODES];
+
+export const DOMESTIC_LEAGUES = LEAGUES.filter((league) => !NON_DOMESTIC_CODES.includes(league.code));
+export const EUROPEAN_LEAGUES = LEAGUES.filter((league) => EUROPEAN_CODES.includes(league.code));
+export const INTERNATIONAL_LEAGUES = LEAGUES.filter((league) => INTERNATIONAL_CODES.includes(league.code));
 
 export const LEAGUE_MAP = Object.fromEntries(
   LEAGUES.map((league) => [league.code, league]),

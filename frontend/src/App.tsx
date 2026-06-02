@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
+import LeagueBackground from './components/LeagueBackground';
 import MatchTabs from './components/MatchTabs';
 import MatchGrid from './components/MatchGrid';
 import StandingsTable from './components/StandingsTable';
@@ -12,7 +13,7 @@ import ErrorMessage from './components/ErrorMessage';
 import { Match, MatchStatus } from './types';
 import { apiService } from './services/api';
 import { useWebSocket } from './hooks/useWebSocket';
-import { DEFAULT_LEAGUE, DOMESTIC_LEAGUES, EUROPEAN_LEAGUES, LEAGUE_MAP, type LeagueCode } from './constants/leagues';
+import { DEFAULT_LEAGUE, DOMESTIC_LEAGUES, EUROPEAN_LEAGUES, INTERNATIONAL_LEAGUES, LEAGUE_MAP, type LeagueCode } from './constants/leagues';
 import { WS_URL } from './config';
 
 const dedupeMatches = (items: Match[]) => {
@@ -28,7 +29,10 @@ const LeagueSection: React.FC<{
   onSelect: (league: LeagueCode) => void;
 }> = ({ title, leagues, selectedLeague, onSelect }) => (
   <div className="flex flex-col items-center gap-2">
-    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-slate-500">
+    <p
+      className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-slate-200"
+      style={{ textShadow: '0 1px 4px rgba(0,0,0,0.85)' }}
+    >
       {title}
     </p>
     <div className="flex items-center justify-center gap-2 flex-wrap">
@@ -38,16 +42,32 @@ const LeagueSection: React.FC<{
           <button
             key={league.code}
             onClick={() => onSelect(league.code)}
-            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide border transition-all ${
-              isActive ? 'text-[#0d1117] shadow-lg' : 'text-slate-300 hover:text-white'
-            }`}
-            style={{
-              backgroundColor: isActive ? league.accent : 'rgba(255, 255, 255, 0.05)',
-              borderColor: isActive ? league.accent : 'rgba(255, 255, 255, 0.12)',
-              boxShadow: isActive ? `0 10px 30px ${league.accentSoft}` : 'none',
-            }}
+            aria-label={league.name}
+            title={league.name}
+            aria-pressed={isActive}
+            className="flex flex-col items-center justify-center gap-2 px-2 pt-2 pb-1 transition-all hover:-translate-y-0.5"
           >
-            {league.name}
+            <img
+              src={league.emblem}
+              alt={league.name}
+              className={`w-11 h-11 sm:w-14 sm:h-14 object-contain transition-all ${
+                isActive ? 'scale-110' : 'scale-100'
+              } ${league.code === 'CL' ? 'bg-white rounded-lg p-1.5' : ''}`}
+              style={
+                isActive
+                  ? { filter: `drop-shadow(0 0 10px ${league.accentBright})` }
+                  : undefined
+              }
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            <span
+              className="h-[3px] rounded-full transition-all"
+              style={{
+                width: isActive ? '1.75rem' : '0',
+                backgroundColor: league.accentBright,
+                boxShadow: isActive ? `0 0 8px ${league.accentBright}` : 'none',
+              }}
+            />
           </button>
         );
       })}
@@ -75,7 +95,7 @@ const AppInner: React.FC = () => {
   });
 
   const leagueTheme = LEAGUE_MAP[selectedLeague];
-  const showTeamsTab = selectedLeague !== 'CL';
+  const showTeamsTab = selectedLeague !== 'CL' && selectedLeague !== 'WC';
   const showBracketTab = selectedLeague === 'CL';
   const isOnMatchDetail = location.pathname.startsWith('/match/');
   const currentScreen = isOnMatchDetail ? 'detail' : activeTab;
@@ -85,12 +105,15 @@ const AppInner: React.FC = () => {
     root.style.setProperty('--league-accent', leagueTheme.accent);
     root.style.setProperty('--league-accent-soft', leagueTheme.accentSoft);
     root.style.setProperty('--league-accent-text', leagueTheme.accentText);
+    root.style.setProperty('--league-accent-bright', leagueTheme.accentBright);
+    root.style.setProperty('--league-accent-bright-soft', leagueTheme.accentBrightSoft);
     root.style.setProperty('--league-page-background', leagueTheme.pageBackground);
     root.style.setProperty('--league-stripe-color', leagueTheme.stripeColor);
     root.style.setProperty('--league-line-color', leagueTheme.lineColor);
     root.style.setProperty('--league-ring-color', leagueTheme.ringColor);
     root.setAttribute('data-screen', currentScreen);
-  }, [currentScreen, leagueTheme]);
+    root.setAttribute('data-league', selectedLeague);
+  }, [currentScreen, leagueTheme, selectedLeague]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -259,14 +282,13 @@ const AppInner: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <LeagueBackground league={selectedLeague} />
       <Header
-        lastUpdated={lastUpdated}
         onRefresh={() => {
           fetchAllMatches();
           fetchMatches(activeTab);
         }}
         loading={loading}
-        wsConnected={wsConnected}
       />
 
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -285,10 +307,16 @@ const AppInner: React.FC = () => {
                 selectedLeague={selectedLeague}
                 onSelect={setSelectedLeague}
               />
+              <LeagueSection
+                title="International"
+                leagues={INTERNATIONAL_LEAGUES}
+                selectedLeague={selectedLeague}
+                onSelect={setSelectedLeague}
+              />
             </div>
 
             <h1
-              className="text-5xl sm:text-7xl font-black mb-2 leading-none"
+              className="text-4xl sm:text-6xl lg:text-7xl font-black mb-2 leading-none break-words"
               style={{ fontFamily: 'Orbitron, monospace' }}
             >
               <span
@@ -298,7 +326,10 @@ const AppInner: React.FC = () => {
                 {leagueTheme.name}
               </span>
             </h1>
-            <p className="text-slate-300/70 text-sm font-medium tracking-wide">
+            <p
+              className="text-sm font-semibold tracking-wide"
+              style={{ color: 'var(--league-accent)', opacity: 0.9 }}
+            >
               Live scores · Fixtures · Results · Standings
             </p>
           </div>

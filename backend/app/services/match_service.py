@@ -247,6 +247,8 @@ class MatchService:
             away_team_id=match.away_team_id,
             home_score=match.home_score,
             away_score=match.away_score,
+            penalty_home=getattr(match, 'penalty_home', None),
+            penalty_away=getattr(match, 'penalty_away', None),
             status=match.status,
             minute=match.minute,
             venue=match.venue,

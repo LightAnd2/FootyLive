@@ -5,6 +5,7 @@ import { apiService } from '../services/api';
 import { ArrowLeft, CalendarDays, MapPin, Shield, RefreshCw, User } from 'lucide-react';
 import { format } from 'date-fns';
 import ErrorMessage from './ErrorMessage';
+import { LEAGUE_MAP, type LeagueCode } from '../constants/leagues';
 
 function EventIcon({ type }: { type: string }) {
   if (type === 'goal')         return <span className="text-base leading-none" title="Goal">⚽</span>;
@@ -137,8 +138,15 @@ const MatchDetail: React.FC = () => {
 
           <div className="text-center">
             {showScore ? (
-              <div className="text-5xl sm:text-6xl font-black text-white tabular-nums" style={{ fontFamily: 'Orbitron, monospace' }}>
-                {match.home_score}<span className="text-slate-600 mx-1">–</span>{match.away_score}
+              <div>
+                <div className="text-5xl sm:text-6xl font-black text-white tabular-nums" style={{ fontFamily: 'Orbitron, monospace' }}>
+                  {match.home_score}<span className="text-slate-600 mx-1">–</span>{match.away_score}
+                </div>
+                {match.penalty_home != null && match.penalty_away != null && (
+                  <div className="text-xs text-slate-400 mt-2 tabular-nums">
+                    {match.penalty_home}–{match.penalty_away} on penalties
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-2xl font-black text-slate-500">vs</div>
@@ -174,7 +182,16 @@ const MatchDetail: React.FC = () => {
         <div className="glass-effect rounded-xl p-4">
           <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Competition</p>
           <p className="text-sm text-slate-200 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-slate-500 shrink-0" />
+            {LEAGUE_MAP[match.competition_code as LeagueCode]?.emblem ? (
+              <img
+                src={LEAGUE_MAP[match.competition_code as LeagueCode].emblem}
+                alt=""
+                className="w-4 h-4 object-contain shrink-0"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            ) : (
+              <Shield className="w-4 h-4 text-slate-500 shrink-0" />
+            )}
             {match.competition_name || 'League Match'}
           </p>
           {match.matchday != null && (

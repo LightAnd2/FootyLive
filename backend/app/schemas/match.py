@@ -43,6 +43,8 @@ class MatchBase(BaseModel):
     away_team_id: int
     home_score: int = 0
     away_score: int = 0
+    penalty_home: Optional[int] = None
+    penalty_away: Optional[int] = None
     status: str
     minute: Optional[int] = None
     venue: Optional[str] = None

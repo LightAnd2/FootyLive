@@ -1,20 +1,25 @@
 # FootyLive
 
-Real-time football scores, fixtures, standings, and a UCL knockout bracket — for the Premier League, Bundesliga, Ligue 1, Serie A, La Liga, and Champions League.
+Real-time football scores, fixtures, standings, and a UCL knockout bracket — for the Premier League, Bundesliga, Ligue 1, Serie A, La Liga, the Champions League, and the FIFA World Cup.
 
-![FootyLive screenshot](docs/premScreenshot.png)
+![FootyLive Premier League screenshot](docs/premScreenshot.jpg)
+
+![FootyLive Champions League screenshot](docs/uclmage.jpg)
 
 ---
 
 ## Features
 
 - **Live scores** — live status, scorelines, and recent match states refresh automatically
-- **All major leagues** — PL · BUN · L1 · SA · La Liga · UCL, each with its own color theme
+- **All major competitions** — PL · BUN · L1 · SA · La Liga · UCL · World Cup, each with its own color theme and full-screen backdrop
+- **Domestic, European & International** — leagues, the Champions League, and the FIFA World Cup, grouped into their own selectors
 - **UCL knockout bracket** — aggregated two-leg ties with correct winner detection
+- **Penalty shootouts** — knockout ties decided on penalties show the shootout score and the correct winner
 - **Standings & top scorers** — league table with form guide, goal difference, and scorer stats
 - **Club profiles** — squad, coach, venue, recent results, and upcoming fixtures per team
 - **Today tab** — all of today's matches with live scores that update in real time and final scores once a game ends
 - **Auto-recovery** — a background syncer catches any game that finished while the server was down or no tab was open
+- **Responsive UI** — adapts across mobile, tablet, and desktop
 
 ---
 

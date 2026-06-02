@@ -25,11 +25,15 @@ SUPPORTED_COMPETITIONS = {
         "name": "UEFA Champions League",
         "country": "Europe",
     },
+    "WC": {
+        "name": "FIFA World Cup",
+        "country": "World",
+    },
 }
 
 
 DEFAULT_COMPETITION_CODE = "PL"
-MAIN_LEAGUE_CODES = ["PL", "BL1", "FL1", "SA", "PD", "CL"]
+MAIN_LEAGUE_CODES = ["PL", "BL1", "FL1", "SA", "PD", "CL", "WC"]
 
 
 def normalize_competition_code(code: Optional[str]) -> str:

@@ -11,6 +11,8 @@ class Match(Base):
     away_team_id = Column(Integer, ForeignKey("teams.id"))
     home_score = Column(Integer, default=0)
     away_score = Column(Integer, default=0)
+    penalty_home = Column(Integer, nullable=True)  # Shootout score, set only when decided on penalties
+    penalty_away = Column(Integer, nullable=True)
     status = Column(String(50))  # scheduled, live, half_time, full_time, etc.
     minute = Column(Integer, nullable=True)
     venue = Column(String(255))

@@ -23,6 +23,20 @@ logger = logging.getLogger(__name__)
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
+
+def _ensure_match_columns():
+    """Add columns introduced after the table was first created (SQLite has no
+    automatic schema migration, and create_all only creates missing tables)."""
+    from sqlalchemy import inspect, text
+    existing = {c["name"] for c in inspect(engine).get_columns("matches")}
+    for column in ("penalty_home", "penalty_away"):
+        if column not in existing:
+            with engine.begin() as conn:
+                conn.execute(text(f"ALTER TABLE matches ADD COLUMN {column} INTEGER"))
+
+
+_ensure_match_columns()
+
 app = FastAPI(
     title="FootyLive API",
     description="Live football tracker for major domestic leagues and the UEFA Champions League, powered by football-data.org",
