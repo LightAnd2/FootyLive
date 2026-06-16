@@ -39,7 +39,7 @@ const ScorersTable: React.FC<ScorersTableProps> = ({ competition }) => {
   ] as const;
 
   return (
-    <div className="glass-effect rounded-2xl overflow-hidden">
+    <div className="glass-effect rounded-2xl overflow-hidden accent-frame">
       {/* Header */}
       <div className="px-5 py-4 border-b border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h2 className="text-base font-black text-white uppercase tracking-wider" style={{ fontFamily: 'Orbitron, monospace' }}>

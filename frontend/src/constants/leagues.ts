@@ -11,6 +11,8 @@ export interface LeagueTheme {
   /** Lightened accent that stays legible on dark glass (cards, tables, inputs). */
   accentBright: string;
   accentBrightSoft: string;
+  /** Free font that evokes the league's official logo type. */
+  titleFont: string;
   titleGradient: string;
   pageBackground: string;
   stripeColor: string;
@@ -29,6 +31,7 @@ export const LEAGUES: LeagueTheme[] = [
     accentText: '#3d195b',
     accentBright: '#c4a3f0',
     accentBrightSoft: 'rgba(196, 163, 240, 0.14)',
+    titleFont: "'Poppins', sans-serif",
     titleGradient: 'linear-gradient(90deg, #3d195b 0%, #3d195b 50%, #3d195b 100%)',
     pageBackground: 'linear-gradient(135deg, #1b0423 0%, #2c0939 22%, #014a37 50%, #00694c 72%, #3a0814 92%, #14031d 100%)',
     stripeColor: 'rgba(0, 180, 90, 0.12)',
@@ -45,6 +48,7 @@ export const LEAGUES: LeagueTheme[] = [
     accentText: '#d20515',
     accentBright: '#ff5d6c',
     accentBrightSoft: 'rgba(255, 93, 108, 0.14)',
+    titleFont: "'Archivo Black', sans-serif",
     titleGradient: 'linear-gradient(90deg, #d20515 0%, #d20515 50%, #d20515 100%)',
     pageBackground: 'linear-gradient(145deg, #0c0c0d 0%, #34060b 24%, #9d0c19 50%, #cf1020 62%, #5a4710 86%, #0a0a0b 100%)',
     stripeColor: 'rgba(226, 75, 91, 0.1)',
@@ -61,6 +65,7 @@ export const LEAGUES: LeagueTheme[] = [
     accentText: '#13235b',
     accentBright: '#6b8cff',
     accentBrightSoft: 'rgba(107, 140, 255, 0.14)',
+    titleFont: "'Orbitron', sans-serif",
     titleGradient: 'linear-gradient(90deg, #13235b 0%, #13235b 50%, #13235b 100%)',
     pageBackground: 'linear-gradient(130deg, #05101f 0%, #082748 24%, #0b4f93 48%, #0f72ad 64%, #320a12 90%, #050c17 100%)',
     stripeColor: 'rgba(22, 217, 255, 0.12)',
@@ -77,6 +82,7 @@ export const LEAGUES: LeagueTheme[] = [
     accentText: '#0a3d8f',
     accentBright: '#5b9bff',
     accentBrightSoft: 'rgba(91, 155, 255, 0.14)',
+    titleFont: "'Montserrat', sans-serif",
     titleGradient: 'linear-gradient(90deg, #0a3d8f 0%, #0a3d8f 50%, #0a3d8f 100%)',
     pageBackground: 'linear-gradient(150deg, #03281a 0%, #053862 26%, #034196 50%, #0a356a 72%, #2c0810 100%)',
     stripeColor: 'rgba(75, 134, 217, 0.08)',
@@ -93,6 +99,7 @@ export const LEAGUES: LeagueTheme[] = [
     accentText: '#e2231a',
     accentBright: '#ff6257',
     accentBrightSoft: 'rgba(255, 98, 87, 0.14)',
+    titleFont: "'Poppins', sans-serif",
     titleGradient: 'linear-gradient(90deg, #e2231a 0%, #e2231a 50%, #e2231a 100%)',
     pageBackground: 'linear-gradient(140deg, #1a070a 0%, #4c0f15 26%, #b3181f 50%, #c81230 62%, #6e5310 86%, #160608 100%)',
     stripeColor: 'rgba(229, 75, 75, 0.1)',
@@ -109,6 +116,7 @@ export const LEAGUES: LeagueTheme[] = [
     accentText: '#8cc1ff',
     accentBright: '#5aa6ff',
     accentBrightSoft: 'rgba(90, 166, 255, 0.16)',
+    titleFont: "'Oswald', sans-serif",
     titleGradient: 'linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #ffffff 100%)',
     pageBackground: 'linear-gradient(135deg, #020714 0%, #0a1f4d 24%, #123d8c 50%, #0f2b61 76%, #01040c 100%)',
     stripeColor: 'rgba(90, 166, 255, 0.12)',
@@ -125,6 +133,7 @@ export const LEAGUES: LeagueTheme[] = [
     accentText: '#e3c35a',
     accentBright: '#e8c766',
     accentBrightSoft: 'rgba(232, 199, 102, 0.16)',
+    titleFont: "'Anton', sans-serif",
     titleGradient: 'linear-gradient(90deg, #e8c766 0%, #c9a227 50%, #e8c766 100%)',
     pageBackground: 'linear-gradient(135deg, #1a1405 0%, #3a2c08 24%, #6b5210 48%, #2a2208 72%, #0c0a03 100%)',
     stripeColor: 'rgba(201, 162, 39, 0.1)',

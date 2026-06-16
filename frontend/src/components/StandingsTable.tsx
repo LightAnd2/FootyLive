@@ -479,7 +479,7 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
 
   if (loading) {
     return (
-      <div className="glass-effect rounded-2xl overflow-hidden">
+      <div className="glass-effect rounded-2xl overflow-hidden accent-frame">
         <div className="py-8 text-center text-sm text-slate-400">Loading {league.name} table...</div>
       </div>
     );
@@ -487,7 +487,7 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
 
   if (error || !standings) {
     return (
-      <div className="glass-effect rounded-2xl overflow-hidden">
+      <div className="glass-effect rounded-2xl overflow-hidden accent-frame">
         <p className="text-center text-slate-400 py-12 px-4">{error}</p>
       </div>
     );
@@ -600,7 +600,7 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
           </div>
         </div>
         {selectedTie && (
-          <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+          <div className="rounded-2xl border border-white/10 bg-[#12161d] p-4">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Tie details</p>
@@ -666,11 +666,6 @@ const StandingsTable: React.FC<StandingsTableProps> = ({ competition, initialVie
                 </button>
               ))}
             </div>
-          )}
-          {standings.season?.currentMatchday != null && (
-            <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white/5 border border-white/10 text-slate-300">
-              {competition === 'CL' ? `Round ${standings.season.currentMatchday}` : `Matchday ${standings.season.currentMatchday}`}
-            </span>
           )}
         </div>
       </div>

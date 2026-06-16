@@ -3,16 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Match } from '../types';
 import { format } from 'date-fns';
 import { Star } from 'lucide-react';
-import { LEAGUE_MAP, type LeagueCode } from '../constants/leagues';
 
 interface MatchCardProps {
   match: Match;
   isFavouriteMatch?: boolean;
 }
-
-const COMP_SHORT: Record<string, string> = {
-  PL: 'PL', CL: 'UCL', BL1: 'BUN', PD: 'LAL', SA: 'SA', FL1: 'L1', WC: 'WC',
-};
 
 const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }) => {
   const navigate  = useNavigate();
@@ -20,10 +15,6 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }
   const isHT      = match.status === 'half_time';
   const isLiveAny = isLive || isHT;
   const isFT      = match.status === 'full_time';
-
-  const compCode  = match.competition_code ?? 'PL';
-  const compLabel = COMP_SHORT[compCode] ?? compCode;
-  const compTheme = LEAGUE_MAP[compCode as LeagueCode];
 
   const statusNode = () => {
     if (isHT)   return <span className="text-orange-400 font-bold text-xs">HT</span>;
@@ -61,23 +52,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isFavouriteMatch = false }
       )}
 
       {/* Top strip */}
-      <div className="flex items-center justify-between px-4 pt-3.5 pb-2.5 border-b border-white/5">
-        <span
-          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded"
-          style={compTheme
-            ? { color: compTheme.accentBright, backgroundColor: compTheme.accentBrightSoft }
-            : undefined}
-        >
-          {compTheme?.emblem && (
-            <img
-              src={compTheme.emblem}
-              alt=""
-              className="w-3 h-3 object-contain"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
-            />
-          )}
-          {compLabel}
-        </span>
+      <div className="flex items-center justify-end px-4 pt-3.5 pb-2.5 border-b border-white/5">
         <div>{statusNode()}</div>
       </div>
 

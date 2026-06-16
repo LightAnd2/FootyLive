@@ -11,7 +11,7 @@ Real-time football scores, fixtures, standings, and a UCL knockout bracket — f
 ## Features
 
 - **Live scores** — live status, scorelines, and recent match states refresh automatically
-- **All major competitions** — PL · BUN · L1 · SA · La Liga · UCL · World Cup, each with its own color theme and full-screen backdrop
+- **All major competitions** — PL · BUN · L1 · SA · La Liga · UCL · World Cup, each with its own color theme, full-screen backdrop, and logo-inspired title font
 - **Domestic, European & International** — leagues, the Champions League, and the FIFA World Cup, grouped into their own selectors
 - **UCL knockout bracket** — aggregated two-leg ties with correct winner detection
 - **Penalty shootouts** — knockout ties decided on penalties show the shootout score and the correct winner

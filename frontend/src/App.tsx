@@ -283,41 +283,40 @@ const AppInner: React.FC = () => {
   return (
     <div className="min-h-screen">
       <LeagueBackground league={selectedLeague} />
-      <Header
-        onRefresh={() => {
-          fetchAllMatches();
-          fetchMatches(activeTab);
-        }}
-        loading={loading}
-      />
+      <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {!isOnMatchDetail && (
           <div className="text-center mb-8">
-            <div className="mb-5 space-y-4">
-              <LeagueSection
-                title="Domestic Leagues"
-                leagues={DOMESTIC_LEAGUES}
-                selectedLeague={selectedLeague}
-                onSelect={setSelectedLeague}
-              />
-              <LeagueSection
-                title="Europe"
-                leagues={EUROPEAN_LEAGUES}
-                selectedLeague={selectedLeague}
-                onSelect={setSelectedLeague}
-              />
-              <LeagueSection
-                title="International"
-                leagues={INTERNATIONAL_LEAGUES}
-                selectedLeague={selectedLeague}
-                onSelect={setSelectedLeague}
-              />
+            <div
+              className="mb-5 inline-block rounded-2xl border-2 px-5 py-4 sm:px-8 sm:py-5"
+              style={{ borderColor: 'var(--league-accent)' }}
+            >
+              <div className="space-y-4">
+                <LeagueSection
+                  title="Domestic Leagues"
+                  leagues={DOMESTIC_LEAGUES}
+                  selectedLeague={selectedLeague}
+                  onSelect={setSelectedLeague}
+                />
+                <LeagueSection
+                  title="Europe"
+                  leagues={EUROPEAN_LEAGUES}
+                  selectedLeague={selectedLeague}
+                  onSelect={setSelectedLeague}
+                />
+                <LeagueSection
+                  title="International"
+                  leagues={INTERNATIONAL_LEAGUES}
+                  selectedLeague={selectedLeague}
+                  onSelect={setSelectedLeague}
+                />
+              </div>
             </div>
 
             <h1
               className="text-4xl sm:text-6xl lg:text-7xl font-black mb-2 leading-none break-words"
-              style={{ fontFamily: 'Orbitron, monospace' }}
+              style={{ fontFamily: leagueTheme.titleFont }}
             >
               <span
                 className="bg-clip-text text-transparent drop-shadow-lg"
@@ -326,12 +325,6 @@ const AppInner: React.FC = () => {
                 {leagueTheme.name}
               </span>
             </h1>
-            <p
-              className="text-sm font-semibold tracking-wide"
-              style={{ color: 'var(--league-accent)', opacity: 0.9 }}
-            >
-              Live scores · Fixtures · Results · Standings
-            </p>
           </div>
         )}
 
