@@ -27,7 +27,7 @@ class RateLimiter:
         self.day_limit = 10000
         
         # Burst protection
-        self.burst_limit = 10  # Max 10 calls in 10 seconds
+        self.burst_limit = 30  # Max 30 calls in 10 seconds
         self.burst_window = 10  # 10 seconds
         
         # Cleanup interval

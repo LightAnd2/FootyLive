@@ -127,14 +127,36 @@ export interface ScorerRow {
   player: { id: number; name: string; nationality: string };
   team: { id: number; name: string; tla: string; crest: string };
   goals: number;
-  assists: number;
   penalties: number;
   playedMatches?: number;
 }
 
 export interface Scorers {
-  season: object;
+  season: { startDate?: string; endDate?: string };
   scorers: ScorerRow[];
+}
+
+export interface H2HMatch {
+  id: number;
+  date: string;
+  competition: string;
+  home_team: { id: number; name: string; tla: string; crest: string };
+  away_team: { id: number; name: string; tla: string; crest: string };
+  score: {
+    home: number | null;
+    away: number | null;
+    winner: string | null;
+    penalty_home: number | null;
+    penalty_away: number | null;
+  };
+}
+
+export interface HeadToHead {
+  total_matches: number;
+  home: { id: number; name: string; wins: number };
+  away: { id: number; name: string; wins: number };
+  draws: number;
+  matches: H2HMatch[];
 }
 
 export interface ApiResponse<T> {

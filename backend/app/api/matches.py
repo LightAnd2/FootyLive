@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -7,6 +9,7 @@ from app.schemas.match import Match as MatchSchema, MatchList
 from app.services.football_data import football_data_service
 from app.services.match_service import MatchService
 from app.core.competitions import MAIN_LEAGUE_CODES, normalize_competition_code
+from app.core.cache import cache_get, cache_set
 
 router = APIRouter(redirect_slashes=False)
 
@@ -87,6 +90,87 @@ async def get_match(match_id: int, db: Session = Depends(get_db)):
     return match
 
 
+def _fmt_h2h_team(t: dict) -> dict:
+    return {
+        "id": t.get("id"),
+        "name": t.get("shortName") or t.get("name", ""),
+        "tla": t.get("tla", ""),
+        "crest": t.get("crest", ""),
+    }
+
+
+@router.get("/{match_id}/h2h")
+async def get_match_head_to_head(match_id: int, db: Session = Depends(get_db)):
+    """Head-to-head record between the two teams of a match."""
+    match_service = MatchService(db)
+    match = await match_service.get_match_by_id(match_id)
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
+
+    cache_key = f"h2h:{match.external_id}"
+    cached = await cache_get(cache_key)
+    if cached:
+        return cached
+
+    data = await football_data_service._get(
+        f"/matches/{match.external_id}/head2head", params={"limit": 10}
+    )
+    if not data:
+        raise HTTPException(status_code=502, detail="Failed to fetch head-to-head")
+
+    home_ext_id = match.home_team.external_id
+    away_ext_id = match.away_team.external_id
+
+    previous = []
+    for m in data.get("matches", []):
+        score = m.get("score") or {}
+        ft = score.get("fullTime") or {}
+        penalties = score.get("penalties") or {}
+        home_score, away_score = ft.get("home"), ft.get("away")
+        pen_home, pen_away = penalties.get("home"), penalties.get("away")
+        # Shootout tallies are folded into fullTime by the API; unfold them.
+        if pen_home is not None and pen_away is not None and home_score is not None and away_score is not None:
+            home_score -= pen_home
+            away_score -= pen_away
+        previous.append({
+            "id": m.get("id"),
+            "date": m.get("utcDate", ""),
+            "competition": (m.get("competition") or {}).get("name", ""),
+            "home_team": _fmt_h2h_team(m.get("homeTeam") or {}),
+            "away_team": _fmt_h2h_team(m.get("awayTeam") or {}),
+            "score": {
+                "home": home_score,
+                "away": away_score,
+                "winner": score.get("winner"),
+                "penalty_home": pen_home,
+                "penalty_away": pen_away,
+            },
+        })
+
+    # The API's aggregates block is unreliable; tally the returned matches instead.
+    home_wins = away_wins = draws = 0
+    for p in previous:
+        winner = p["score"]["winner"]
+        if winner == "DRAW" or (winner is None and p["score"]["home"] is not None):
+            draws += 1
+        elif winner in ("HOME_TEAM", "AWAY_TEAM"):
+            winner_id = p["home_team"]["id"] if winner == "HOME_TEAM" else p["away_team"]["id"]
+            if winner_id == home_ext_id:
+                home_wins += 1
+            elif winner_id == away_ext_id:
+                away_wins += 1
+
+    result = {
+        "total_matches": len(previous),
+        "home": {"id": home_ext_id, "name": match.home_team.name, "wins": home_wins},
+        "away": {"id": away_ext_id, "name": match.away_team.name, "wins": away_wins},
+        "draws": draws,
+        "matches": previous,
+    }
+    await cache_set(cache_key, result, ttl=3600)
+    return result
+
+
 @router.post("/sync")
 async def sync_matches(db: Session = Depends(get_db)):
     """Sync supported league matches from football-data.org."""
@@ -100,10 +184,18 @@ async def sync_matches(db: Session = Depends(get_db)):
         future_end = (now + timedelta(days=60)).strftime("%Y-%m-%d")
         total = 0
 
-        for competition in MAIN_LEAGUE_CODES:
+        for i, competition in enumerate(MAIN_LEAGUE_CODES):
+            # Stay under the API's 10 requests/minute free-tier cap
+            if i > 0:
+                await asyncio.sleep(6.5)
             matches = await football_data_service.fetch_matches_range(
                 season_start, future_end, competition
             )
+            if not matches:
+                # Tournaments between editions (e.g. the Euros) have no matches in
+                # the club-season window; fall back to their latest season instead.
+                await asyncio.sleep(6.5)
+                matches = await football_data_service.fetch_matches(competition=competition)
             await match_service.sync_matches(matches)
             total += len(matches)
 

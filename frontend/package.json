@@ -1,7 +1,7 @@
 {
   "name": "footylive-frontend",
   "version": "1.0.0",
-  "description": "FootyLive Frontend - Premier League Match Tracker",
+  "description": "FootyLive — live football scores across major leagues and tournaments",
   "type": "module",
   "private": true,
   "dependencies": {

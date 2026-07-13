@@ -6,7 +6,8 @@ FootyLive uses `football-data.org`.
 
 ### Automated
 ```bash
-cd /Users/andrew/Desktop/FootyLive
+git clone https://github.com/LightAnd2/FootyLive.git
+cd FootyLive
 python3 setup_api.py
 ```
 

@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Match, MatchStatus } from '../types';
 import { format, parseISO } from 'date-fns';
 import MatchCard from './MatchCard';
-import TeamHistory from './TeamHistory';
-import type { LeagueCode } from '../constants/leagues';
+import { CUP_CODES, type LeagueCode } from '../constants/leagues';
 import { useFavourites } from '../hooks/useFavourites';
 
 interface MatchGridProps {
@@ -25,7 +24,7 @@ function groupMatches(matches: Match[], tab: MatchStatus, competition: LeagueCod
 
   const map = new Map<string, Match[]>();
   for (const m of matches) {
-    const key = m.matchday && competition !== 'CL' && competition !== 'WC'
+    const key = m.matchday && !CUP_CODES.includes(competition)
       ? `Matchweek ${m.matchday}`
       : format(parseISO(m.match_date), 'EEEE, d MMMM yyyy');
     if (!map.has(key)) map.set(key, []);
@@ -35,7 +34,6 @@ function groupMatches(matches: Match[], tab: MatchStatus, competition: LeagueCod
 }
 
 const MatchGrid: React.FC<MatchGridProps> = ({ matches, activeTab, competition }) => {
-  const [historyTeamId, setHistoryTeamId] = useState<number | null>(null);
   const { favourites } = useFavourites();
 
   const isFavouriteMatch = (match: Match) =>
@@ -49,48 +47,40 @@ const MatchGrid: React.FC<MatchGridProps> = ({ matches, activeTab, competition }
 
   const groups = useMemo(() => groupMatches(matches, activeTab, competition), [matches, activeTab, competition]);
 
-  if (historyTeamId !== null) {
-    return <TeamHistory teamId={historyTeamId} competition={competition} onBack={() => setHistoryTeamId(null)} />;
-  }
-
   if (matches.length === 0) {
     const msg = EMPTY[activeTab] ?? EMPTY.default;
     return (
-      <div className="text-center py-24">
-        <div className="w-10 h-10 rounded-full bg-white/5 mx-auto mb-4" />
-        <h3 className="text-base font-bold text-slate-300 mb-1">{msg.title}</h3>
-        <p className="text-slate-500 max-w-xs mx-auto text-sm">{msg.subtitle}</p>
+      <div className="card px-6 py-14 text-center">
+        <h3 className="text-sm font-bold text-slate-700">{msg.title}</h3>
+        <p className="mx-auto mt-1 max-w-xs text-sm text-slate-400">{msg.subtitle}</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="space-y-8">
-        {groups.map(({ label, items }) => {
-          const sorted = sortWithFavourites(items);
-          return (
-            <div key={label || 'all'}>
-              {label && (
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">{label}</span>
-                  <div className="flex-1 h-px bg-white/8" />
-                  <span className="text-xs text-slate-600">{items.length} match{items.length !== 1 ? 'es' : ''}</span>
-                </div>
-              )}
-              <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {sorted.map(match => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    isFavouriteMatch={isFavouriteMatch(match)}
-                  />
-                ))}
+    <div className="space-y-3">
+      {groups.map(({ label, items }) => {
+        const sorted = sortWithFavourites(items);
+        return (
+          <div key={label || 'all'} className="card">
+            {label && (
+              <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/60 px-4 py-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</span>
+                <span className="text-[11px] text-slate-400">{items.length} match{items.length !== 1 ? 'es' : ''}</span>
               </div>
+            )}
+            <div className="divide-y divide-slate-100">
+              {sorted.map(match => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  isFavouriteMatch={isFavouriteMatch(match)}
+                />
+              ))}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

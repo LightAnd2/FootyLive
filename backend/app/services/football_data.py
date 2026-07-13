@@ -52,6 +52,11 @@ class FootballDataService:
         data = await self._get("/matches", params={"status": "IN_PLAY,PAUSED"})
         return data.get("matches", []) if data else []
 
+    async def fetch_all_matches_window(self, date_from: str, date_to: str) -> List[Dict[str, Any]]:
+        """Fetch matches across every accessible competition in one call (API caps the window at 10 days)."""
+        data = await self._get("/matches", params={"dateFrom": date_from, "dateTo": date_to})
+        return data.get("matches", []) if data else []
+
     async def fetch_live_matches(
         self, competition: Optional[str] = None
     ) -> List[Dict[str, Any]]:

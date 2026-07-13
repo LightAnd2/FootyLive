@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@700;800&family=Archivo+Black&family=Montserrat:wght@800;900&family=Oswald:wght@600;700&family=Anton&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -9,239 +9,18 @@
     --league-accent: #00ff85;
     --league-accent-soft: rgba(0, 255, 133, 0.16);
     --league-accent-text: #00ff85;
-    --league-page-background: linear-gradient(135deg, #1b0423 0%, #2c0939 22%, #014a37 50%, #00694c 72%, #3a0814 92%, #14031d 100%);
-    --league-stripe-color: rgba(0, 180, 90, 0.12);
-    --league-line-color: rgba(255,255,255,0.42);
-    --league-ring-color: rgba(255,255,255,0.18);
-    --screen-overlay-1: repeating-linear-gradient(
-      90deg,
-      transparent 0px, transparent 2px,
-      var(--league-stripe-color) 2px, var(--league-stripe-color) 4px,
-      transparent 4px, transparent 6px
-    );
-    --screen-overlay-2: linear-gradient(
-      90deg,
-      transparent 48%, var(--league-line-color) 49%,
-      var(--league-line-color) 51%, transparent 52%
-    );
-    --screen-overlay-3: radial-gradient(
-      circle at 50% 50%,
-      transparent 17%, var(--league-ring-color) 17%,
-      var(--league-ring-color) 19%, transparent 19%
-    );
   }
 
   * {
-    @apply border-white/10;
+    @apply border-slate-200;
   }
 
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @apply text-slate-100;
-    background:
-      var(--league-page-background),
-      var(--screen-overlay-1),
-      var(--screen-overlay-2),
-      var(--screen-overlay-3);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
-    background-attachment: fixed;
-  }
-
-  :root[data-screen='live'] {
-    --screen-overlay-1: repeating-linear-gradient(
-      90deg,
-      transparent 0px, transparent 2px,
-      var(--league-stripe-color) 2px, var(--league-stripe-color) 4px,
-      transparent 4px, transparent 6px
-    );
-    --screen-overlay-2: linear-gradient(
-      90deg,
-      transparent 48%, var(--league-line-color) 49%,
-      var(--league-line-color) 51%, transparent 52%
-    );
-    --screen-overlay-3: radial-gradient(
-      circle at 50% 50%,
-      transparent 17%, var(--league-ring-color) 17%,
-      var(--league-ring-color) 19%, transparent 19%
-    );
-  }
-
-  :root[data-screen='today'] {
-    --screen-overlay-1: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--league-accent-soft) 55%, transparent) 0%,
-      transparent 22%,
-      transparent 78%,
-      color-mix(in srgb, var(--league-ring-color) 55%, transparent) 100%
-    );
-    --screen-overlay-2: repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 68px,
-      color-mix(in srgb, var(--league-line-color) 36%, transparent) 68px,
-      color-mix(in srgb, var(--league-line-color) 36%, transparent) 70px
-    );
-    --screen-overlay-3: radial-gradient(
-      circle at 50% 22%,
-      color-mix(in srgb, var(--league-ring-color) 90%, transparent) 0%,
-      transparent 24%
-    );
-  }
-
-  :root[data-screen='upcoming'] {
-    --screen-overlay-1: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--league-accent-soft) 40%, transparent) 0%,
-      transparent 32%,
-      transparent 68%,
-      color-mix(in srgb, var(--league-ring-color) 40%, transparent) 100%
-    );
-    --screen-overlay-2: repeating-linear-gradient(
-      135deg,
-      transparent 0px,
-      transparent 22px,
-      color-mix(in srgb, var(--league-stripe-color) 72%, transparent) 22px,
-      color-mix(in srgb, var(--league-stripe-color) 72%, transparent) 25px
-    );
-    --screen-overlay-3: radial-gradient(
-      circle at 82% 18%,
-      color-mix(in srgb, var(--league-line-color) 55%, transparent) 0%,
-      transparent 22%
-    );
-  }
-
-  :root[data-screen='results'] {
-    --screen-overlay-1: linear-gradient(
-      180deg,
-      transparent 0%,
-      color-mix(in srgb, var(--league-line-color) 20%, transparent) 14%,
-      transparent 14.8%,
-      transparent 85.2%,
-      color-mix(in srgb, var(--league-line-color) 20%, transparent) 86%,
-      transparent 100%
-    );
-    --screen-overlay-2: repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 56px,
-      color-mix(in srgb, var(--league-stripe-color) 56%, transparent) 56px,
-      color-mix(in srgb, var(--league-stripe-color) 56%, transparent) 58px
-    );
-    --screen-overlay-3: radial-gradient(
-      circle at 18% 84%,
-      color-mix(in srgb, var(--league-ring-color) 85%, transparent) 0%,
-      transparent 24%
-    );
-  }
-
-  :root[data-screen='standings'] {
-    --screen-overlay-1: linear-gradient(
-      180deg,
-      transparent 0%,
-      color-mix(in srgb, var(--league-stripe-color) 80%, transparent) 8%,
-      transparent 8.8%,
-      transparent 91.2%,
-      color-mix(in srgb, var(--league-stripe-color) 80%, transparent) 92%,
-      transparent 100%
-    );
-    --screen-overlay-2: repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 54px,
-      color-mix(in srgb, var(--league-line-color) 50%, transparent) 54px,
-      color-mix(in srgb, var(--league-line-color) 50%, transparent) 56px
-    );
-    --screen-overlay-3: linear-gradient(
-      90deg,
-      transparent 0%,
-      color-mix(in srgb, var(--league-ring-color) 75%, transparent) 14%,
-      transparent 14.8%,
-      transparent 85.2%,
-      color-mix(in srgb, var(--league-ring-color) 75%, transparent) 86%,
-      transparent 100%
-    );
-  }
-
-  :root[data-screen='scorers'] {
-    --screen-overlay-1: radial-gradient(
-      circle at 20% 20%,
-      color-mix(in srgb, var(--league-accent-soft) 90%, transparent) 0%,
-      transparent 28%
-    );
-    --screen-overlay-2: radial-gradient(
-      circle at 80% 18%,
-      color-mix(in srgb, var(--league-ring-color) 95%, transparent) 0%,
-      transparent 24%
-    );
-    --screen-overlay-3: repeating-linear-gradient(
-      135deg,
-      transparent 0px,
-      transparent 18px,
-      color-mix(in srgb, var(--league-stripe-color) 75%, transparent) 18px,
-      color-mix(in srgb, var(--league-stripe-color) 75%, transparent) 21px
-    );
-  }
-
-  :root[data-screen='bracket'] {
-    --screen-overlay-1: radial-gradient(
-      circle at 50% 8%,
-      color-mix(in srgb, var(--league-accent-soft) 42%, transparent) 0%,
-      transparent 28%
-    );
-    --screen-overlay-2: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--league-line-color) 12%, transparent) 0%,
-      transparent 18%,
-      transparent 82%,
-      color-mix(in srgb, var(--league-line-color) 12%, transparent) 100%
-    );
-    --screen-overlay-3: none;
-  }
-
-  :root[data-screen='teams'] {
-    --screen-overlay-1: radial-gradient(
-      circle at 16% 18%,
-      color-mix(in srgb, var(--league-ring-color) 95%, transparent) 0%,
-      transparent 20%
-    );
-    --screen-overlay-2: radial-gradient(
-      circle at 84% 82%,
-      color-mix(in srgb, var(--league-accent-soft) 90%, transparent) 0%,
-      transparent 24%
-    );
-    --screen-overlay-3: repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 80px,
-      color-mix(in srgb, var(--league-line-color) 40%, transparent) 80px,
-      color-mix(in srgb, var(--league-line-color) 40%, transparent) 82px,
-      transparent 82px,
-      transparent 164px
-    );
-  }
-
-  :root[data-screen='detail'] {
-    --screen-overlay-1: radial-gradient(
-      circle at 50% 8%,
-      color-mix(in srgb, var(--league-accent-soft) 95%, transparent) 0%,
-      transparent 26%
-    );
-    --screen-overlay-2: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--league-line-color) 18%, transparent) 0%,
-      transparent 16%,
-      transparent 84%,
-      color-mix(in srgb, var(--league-line-color) 18%, transparent) 100%
-    );
-    --screen-overlay-3: repeating-linear-gradient(
-      135deg,
-      transparent 0px,
-      transparent 28px,
-      color-mix(in srgb, var(--league-stripe-color) 68%, transparent) 28px,
-      color-mix(in srgb, var(--league-stripe-color) 68%, transparent) 30px
-    );
+    @apply text-slate-900;
+    background-color: #f1f2f6;
   }
 
   html { scroll-behavior: smooth; }
@@ -254,28 +33,27 @@
   }
 
   .btn-primary {
-    @apply text-[#0d1117] font-bold shadow-lg;
+    @apply text-white font-bold shadow-md;
     background-color: var(--league-accent);
-    box-shadow: 0 14px 32px var(--league-accent-soft);
   }
 
   .btn-secondary {
-    @apply bg-black/30 text-slate-200 hover:bg-black/50 border border-white/15;
+    @apply bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200;
   }
 
-  /* Cards — solid dark surfaces on colorful background */
+  /* Cards — white surfaces on light neutral background */
   .card {
-    @apply bg-[#12161d] rounded-xl border border-white/10 shadow-lg shadow-black/30 overflow-hidden;
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden;
   }
 
   .card-hover {
-    @apply card hover:bg-[#1a212c] hover:border-white/20 hover:shadow-xl hover:shadow-black/50
+    @apply card hover:border-slate-300 hover:shadow-md
            transition-all duration-200 cursor-pointer;
   }
 
-  /* Panels, header, tables — solid dark */
+  /* Panels, header, tables */
   .glass-effect {
-    @apply bg-[#0d1117] border border-white/10;
+    @apply bg-white border border-slate-200;
   }
 
   /* Outline a panel in the active league's title/brand color */
@@ -287,9 +65,9 @@
   .status-badge {
     @apply px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide;
   }
-  .status-live      { @apply bg-red-500/25 text-red-300 border border-red-500/40; }
-  .status-scheduled { @apply bg-blue-500/20 text-blue-300 border border-blue-500/30; }
-  .status-finished  { @apply bg-white/10 text-slate-400 border border-white/15; }
+  .status-live      { @apply bg-red-50 text-red-600 border border-red-200; }
+  .status-scheduled { @apply bg-blue-50 text-blue-600 border border-blue-200; }
+  .status-finished  { @apply bg-slate-100 text-slate-500 border border-slate-200; }
 
   /* Live dot */
   .live-indicator { @apply w-2 h-2 rounded-full bg-red-500 animate-pulse inline-block; }
@@ -299,7 +77,7 @@
 
   /* Team logo */
   .team-logo {
-    @apply w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0;
+    @apply w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0;
   }
 
   .match-card { @apply relative overflow-hidden; }
@@ -315,100 +93,8 @@
   .scrollbar-hide::-webkit-scrollbar { display: none; }
 }
 
-/* Bright image-background leagues — drop the dark glass navbar */
-:root[data-league='PL'] header,
-:root[data-league='FL1'] header,
-:root[data-league='BL1'] header,
-:root[data-league='PD'] header,
-:root[data-league='SA'] header,
-:root[data-league='CL'] header,
-:root[data-league='WC'] header {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-
 @keyframes score-bounce {
   0%  { transform: scale(1); }
   40% { transform: scale(1.25); }
   100%{ transform: scale(1.05); }
-}
-
-/* ===== League background scene ===== */
-@keyframes beam-sweep {
-  0%   { transform: rotate(var(--beam-from, -14deg)); opacity: 0.55; }
-  50%  { transform: rotate(var(--beam-to, 10deg));    opacity: 0.9; }
-  100% { transform: rotate(var(--beam-from, -14deg)); opacity: 0.55; }
-}
-
-@keyframes glow-breathe {
-  0%,100% { opacity: 0.7; transform: scale(1); }
-  50%     { opacity: 1;   transform: scale(1.06); }
-}
-
-@keyframes particle-rise {
-  0%   { transform: translateY(0) translateX(0); opacity: 0; }
-  12%  { opacity: var(--p-opacity, 0.7); }
-  85%  { opacity: var(--p-opacity, 0.7); }
-  100% { transform: translateY(-115vh) translateX(var(--p-drift, 20px)); opacity: 0; }
-}
-
-@keyframes haze-drift {
-  0%   { transform: translateX(-4%) translateY(0); }
-  50%  { transform: translateX(4%) translateY(-2%); }
-  100% { transform: translateX(-4%) translateY(0); }
-}
-
-@keyframes twinkle {
-  0%,100% { opacity: 0.25; }
-  50%     { opacity: 1; }
-}
-
-@keyframes beam-glow {
-  0%,100% { opacity: 0.32; }
-  50%     { opacity: 0.62; }
-}
-
-@keyframes sway {
-  0%,100% { transform: translateX(0); }
-  50%     { transform: translateX(var(--sway, 14px)); }
-}
-
-/* Camera flash popping in the crowd — brief bright spike, dark the rest of the cycle */
-@keyframes cam-flash {
-  0%, 100% { opacity: 0; transform: scale(0.6); }
-  3%       { opacity: 1; transform: scale(1.6); }
-  9%       { opacity: 0; transform: scale(0.6); }
-}
-
-/* Soccer ball flight — struck ball arcing across the pitch with spin */
-@keyframes ball-fly-r {
-  0%   { transform: translate(-10vw, 0) rotate(0deg);      opacity: 0; }
-  7%   { opacity: 1; }
-  50%  { transform: translate(52vw, -28vh) rotate(900deg); }
-  93%  { opacity: 1; }
-  100% { transform: translate(114vw, 6vh) rotate(1800deg); opacity: 0; }
-}
-
-@keyframes ball-fly-l {
-  0%   { transform: translate(10vw, 0) rotate(0deg);        opacity: 0; }
-  7%   { opacity: 1; }
-  50%  { transform: translate(-48vw, -18vh) rotate(-720deg); }
-  93%  { opacity: 1; }
-  100% { transform: translate(-112vw, 8vh) rotate(-1500deg); opacity: 0; }
-}
-
-@keyframes ball-roll {
-  0%   { transform: translateX(-10vw) rotate(0deg);   opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateX(112vw) rotate(1440deg); opacity: 0; }
-}
-
-.scene-layer { will-change: transform, opacity; }
-
-@media (prefers-reduced-motion: reduce) {
-  .scene-layer { animation: none !important; }
 }

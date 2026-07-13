@@ -19,6 +19,8 @@ const TeamsPage: React.FC<TeamsPageProps> = ({ competition }) => {
   const { isFavourite, toggle } = useFavourites();
 
   useEffect(() => {
+    setSelectedTeam(null);
+    setSearch('');
     setLoading(true);
     apiService.getTeams({ competition })
       .then(data => setTeams(data))
@@ -43,8 +45,8 @@ const TeamsPage: React.FC<TeamsPageProps> = ({ competition }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-black text-white" style={{ fontFamily: 'Orbitron, monospace' }}>Teams</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h2 className="text-lg font-black text-slate-900">Teams</h2>
+          <p className="text-sm text-slate-400 mt-0.5">
             Click a {league.name} team to open its club profile, squad, fixtures, and form
           </p>
         </div>
@@ -54,8 +56,7 @@ const TeamsPage: React.FC<TeamsPageProps> = ({ competition }) => {
             placeholder="Search teams..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none w-48"
-            style={{ borderColor: 'rgba(255,255,255,0.1)' }}
+            className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-700 placeholder-slate-400 focus:outline-none w-48"
           />
         )}
       </div>
@@ -64,67 +65,54 @@ const TeamsPage: React.FC<TeamsPageProps> = ({ competition }) => {
         <div className="glass-effect rounded-2xl px-5 py-8 text-center text-sm text-slate-400">Loading teams...</div>
       ) : sorted.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-slate-500">
+          <p className="text-slate-400">
             {search ? `No teams found for "${search}".` : 'No teams found.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="glass-effect rounded-2xl overflow-hidden">
           {sorted.map(team => {
             const fav = isFavourite(team.id);
             return (
-              <div key={team.id} className="relative group/card">
-                <button
-                  onClick={() => setSelectedTeam(team.id)}
-                  className={`card-hover w-full flex flex-col items-center gap-3 p-5 text-center group ${
-                    fav ? 'ring-1' : ''
-                  }`}
-                  style={fav ? { ringColor: 'var(--league-accent)', boxShadow: `0 0 0 1px var(--league-accent)` } : undefined}
-                >
-                  <div className="w-14 h-14 flex items-center justify-center">
-                    {team.logo ? (
-                      <img
-                        src={team.logo}
-                        alt={team.name}
-                        className="w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-200"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-white/8 flex items-center justify-center">
-                        <span className="text-sm font-black text-slate-400">{team.short_name?.slice(0, 3) ?? team.name.slice(0, 3)}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-200 leading-snug">{team.name}</p>
-                    {team.short_name && (
-                      <p className="text-[11px] text-slate-600 mt-0.5 uppercase tracking-wider">{team.short_name}</p>
-                    )}
-                  </div>
-                </button>
-
-                {/* Star button */}
+              <div
+                key={team.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedTeam(team.id)}
+                onKeyDown={(e) => { if (e.key === 'Enter') setSelectedTeam(team.id); }}
+                className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                  {team.logo ? (
+                    <img
+                      src={team.logo}
+                      alt={team.name}
+                      className="w-8 h-8 object-contain"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+                      <span className="text-[10px] font-black text-slate-500">{team.short_name?.slice(0, 3) ?? team.name.slice(0, 3)}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-900 truncate">{team.name}</p>
+                  {team.short_name && (
+                    <p className="text-[11px] text-slate-400 uppercase tracking-wider">{team.short_name}</p>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); toggle(team.id); }}
-                  className="absolute top-2 right-2 p-1 rounded-lg transition-all opacity-0 group-hover/card:opacity-100 hover:bg-white/10"
+                  className="p-1.5 rounded-lg transition-colors hover:bg-slate-100 shrink-0"
                   title={fav ? 'Remove from favourites' : 'Add to favourites'}
                 >
                   <Star
-                    className="w-3.5 h-3.5 transition-colors"
-                    style={fav ? { color: 'var(--league-accent)', fill: 'var(--league-accent)' } : { color: '#64748b' }}
+                    className="w-4 h-4 transition-colors"
+                    style={fav ? { color: 'var(--league-accent)', fill: 'var(--league-accent)' } : { color: '#94a3b8' }}
                   />
                 </button>
-
-                {/* Persistent star indicator for already-favourited teams */}
-                {fav && (
-                  <div className="absolute top-2 right-2 p-1 pointer-events-none group-hover/card:opacity-0">
-                    <Star
-                      className="w-3.5 h-3.5"
-                      style={{ color: 'var(--league-accent)', fill: 'var(--league-accent)' }}
-                    />
-                  </div>
-                )}
               </div>
             );
           })}

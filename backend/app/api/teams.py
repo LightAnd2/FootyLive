@@ -5,8 +5,10 @@ from app.core.database import get_db
 from app.models.team import Team
 from app.schemas.team import Team as TeamSchema
 from app.services.team_service import TeamService
+from app.core.cache import cache_get, cache_set
 from app.core.config import settings
 from app.core.competitions import normalize_competition_code
+from app.services.football_data import football_data_service
 import httpx
 
 router = APIRouter(redirect_slashes=False)
@@ -80,20 +82,45 @@ async def get_team_history(team_id: int, db: Session = Depends(get_db)):
     headers = {"X-Auth-Token": settings.FOOTBALL_DATA_API_KEY}
     base = settings.FOOTBALL_DATA_BASE_URL
 
+    # The API's `limit` slices from the end of the date-ordered set, so without
+    # an explicit window "upcoming" returns the final fixtures of next season.
+    from datetime import datetime, timedelta, timezone
+    today = datetime.now(timezone.utc).date()
+
     async with httpx.AsyncClient() as client:
         try:
-            r = await client.get(f"{base}/teams/{ext_id}/matches",
-                                 headers=headers, params={"status": "FINISHED", "limit": 30}, timeout=20.0)
+            r = await client.get(
+                f"{base}/teams/{ext_id}/matches",
+                headers=headers,
+                params={
+                    "status": "FINISHED",
+                    "dateFrom": (today - timedelta(days=365)).isoformat(),
+                    "dateTo": today.isoformat(),
+                },
+                timeout=20.0,
+            )
             r.raise_for_status()
             finished = r.json().get("matches", [])
+            finished.sort(key=lambda m: m.get("utcDate", ""), reverse=True)
+            finished = finished[:30]
         except Exception:
             finished = []
 
         try:
-            r2 = await client.get(f"{base}/teams/{ext_id}/matches",
-                                  headers=headers, params={"status": "SCHEDULED,TIMED", "limit": 10}, timeout=20.0)
+            r2 = await client.get(
+                f"{base}/teams/{ext_id}/matches",
+                headers=headers,
+                params={
+                    "status": "SCHEDULED,TIMED",
+                    "dateFrom": today.isoformat(),
+                    "dateTo": (today + timedelta(days=120)).isoformat(),
+                },
+                timeout=20.0,
+            )
             r2.raise_for_status()
             upcoming = r2.json().get("matches", [])
+            upcoming.sort(key=lambda m: m.get("utcDate", ""))
+            upcoming = upcoming[:10]
         except Exception:
             upcoming = []
 
@@ -195,27 +222,20 @@ async def get_team_details(
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
 
-    code = normalize_competition_code(competition)
-    headers = {"X-Auth-Token": settings.FOOTBALL_DATA_API_KEY}
-    base = settings.FOOTBALL_DATA_BASE_URL
+    cache_key = f"team-details:{team.external_id}"
+    cached = await cache_get(cache_key)
+    if cached:
+        return cached
 
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(
-                f"{base}/competitions/{code}/teams",
-                headers=headers,
-                timeout=20.0,
-            )
-            response.raise_for_status()
-            teams = response.json().get("teams", [])
-        except Exception as exc:
-            raise HTTPException(status_code=502, detail=f"Failed to fetch team details: {exc}")
-
-    team_data = next((item for item in teams if item.get("id") == team.external_id), None)
+    # The single-team endpoint is the only one that includes the full squad;
+    # the competition team list omits it.
+    team_data = await football_data_service._get(f"/teams/{team.external_id}")
     if not team_data:
-        raise HTTPException(status_code=404, detail="Team details unavailable")
+        raise HTTPException(status_code=502, detail="Failed to fetch team details")
 
-    return _format_team_detail(team_data)
+    result = _format_team_detail(team_data)
+    await cache_set(cache_key, result, ttl=3600)
+    return result
 
 
 @router.get("/{team_id}", response_model=TeamSchema)
