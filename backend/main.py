@@ -7,11 +7,11 @@ import uvicorn
 from dotenv import load_dotenv
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app.api import matches, teams, players, rate_limit, standings, scorers, clean_sheets
+from app.api import matches, teams, players, rate_limit, standings, scorers, clean_sheets, seasons
 from app.core.config import settings
 from app.core.database import engine, Base, SessionLocal
 from app.core.middleware import RateLimitMiddleware
-from app.models import match, team, player
+from app.models import match, team, player, season_archive
 from app.services.football_data import football_data_service
 from app.services.match_service import MatchService
 
@@ -75,6 +75,7 @@ app.include_router(rate_limit.router, prefix="/api/rate-limit", tags=["rate-limi
 app.include_router(standings.router, prefix="/api/standings", tags=["standings"])
 app.include_router(scorers.router, prefix="/api/scorers", tags=["scorers"])
 app.include_router(clean_sheets.router, prefix="/api/clean-sheets", tags=["clean-sheets"])
+app.include_router(seasons.router, prefix="/api/seasons", tags=["seasons"])
 
 
 class ConnectionManager:
@@ -107,7 +108,6 @@ manager = ConnectionManager()
 async def sync_recent_matches_window():
     """Refresh a wider recent window so completed games don't stay stale if live tracking misses them."""
     from datetime import datetime, timedelta, timezone
-    from app.core.competitions import MAIN_LEAGUE_CODES
 
     db = SessionLocal()
     try:
@@ -116,12 +116,11 @@ async def sync_recent_matches_window():
         date_from = (today - timedelta(days=1)).strftime("%Y-%m-%d")
         date_to = (today + timedelta(days=1)).strftime("%Y-%m-%d")
 
-        for competition in MAIN_LEAGUE_CODES:
-            matches_window = await football_data_service.fetch_matches_range(
-                date_from, date_to, competition
-            )
-            if matches_window:
-                await match_service.sync_matches(matches_window)
+        # One cross-competition call keeps us far below the API's 10 req/min cap
+        # regardless of how many leagues the app tracks.
+        matches_window = await football_data_service.fetch_all_matches_window(date_from, date_to)
+        if matches_window:
+            await match_service.sync_matches(matches_window)
 
         db.commit()
         logger.info("Recent matches window synced.")

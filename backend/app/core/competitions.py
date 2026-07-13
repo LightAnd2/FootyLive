@@ -21,8 +21,28 @@ SUPPORTED_COMPETITIONS = {
         "name": "La Liga",
         "country": "Spain",
     },
+    "DED": {
+        "name": "Eredivisie",
+        "country": "Netherlands",
+    },
+    "PPL": {
+        "name": "Primeira Liga",
+        "country": "Portugal",
+    },
+    "ELC": {
+        "name": "Championship",
+        "country": "England",
+    },
+    "BSA": {
+        "name": "Campeonato Brasileiro Série A",
+        "country": "Brazil",
+    },
     "CL": {
         "name": "UEFA Champions League",
+        "country": "Europe",
+    },
+    "EC": {
+        "name": "European Championship",
         "country": "Europe",
     },
     "WC": {
@@ -33,7 +53,11 @@ SUPPORTED_COMPETITIONS = {
 
 
 DEFAULT_COMPETITION_CODE = "PL"
-MAIN_LEAGUE_CODES = ["PL", "BL1", "FL1", "SA", "PD", "CL", "WC"]
+MAIN_LEAGUE_CODES = ["PL", "ELC", "BL1", "FL1", "SA", "PD", "DED", "PPL", "BSA", "CL", "EC", "WC"]
+
+# Knockout-only competitions: their season is told by the bracket, not a table —
+# archives skip storing a standings snapshot for these.
+CUP_COMPETITION_CODES = {"CL", "EC", "WC"}
 
 
 def normalize_competition_code(code: Optional[str]) -> str:

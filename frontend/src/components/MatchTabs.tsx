@@ -7,6 +7,8 @@ interface MatchTabsProps {
   matchCounts: { live: number; today: number; upcoming: number; results: number };
   showTeamsTab?: boolean;
   showBracketTab?: boolean;
+  /** An archived season is selected — only the tabs that make sense for frozen historical data. */
+  archivedMode?: boolean;
 }
 
 const tabs: { id: MatchStatus; label: string; liveOnly?: boolean }[] = [
@@ -25,14 +27,21 @@ const MatchTabs: React.FC<MatchTabsProps> = ({
   matchCounts,
   showTeamsTab = false,
   showBracketTab = false,
+  archivedMode = false,
 }) => {
   const counts: Record<string, number> = { ...matchCounts };
-  const visibleTabs = tabs.filter((tab) => showBracketTab || tab.id !== 'bracket');
+  let visibleTabs = tabs.filter((tab) => showBracketTab || tab.id !== 'bracket');
   if (showTeamsTab) visibleTabs.push({ id: 'teams' as MatchStatus, label: 'Teams' });
+  // A frozen past season has no live/upcoming/results data. Cups tell their story
+  // through the bracket (no group-stage table); leagues through the table — never both.
+  if (archivedMode) {
+    const archivedTabIds: MatchStatus[] = showBracketTab ? ['bracket', 'scorers'] : ['standings', 'scorers'];
+    visibleTabs = visibleTabs.filter((tab) => archivedTabIds.includes(tab.id));
+  }
 
   return (
-    <div className="mb-6 border-b border-white/10">
-      <nav className="flex items-center justify-start sm:justify-center gap-4 sm:gap-7 overflow-x-auto scrollbar-hide -mb-px px-1">
+    <div className="border-t border-slate-100">
+      <nav className="flex items-center justify-start gap-1 overflow-x-auto scrollbar-hide px-2">
         {visibleTabs.map(({ id, label, liveOnly }) => {
           const isActive = activeTab === id;
           const count = id === 'results' ? 0 : counts[id] ?? 0;
@@ -42,31 +51,24 @@ const MatchTabs: React.FC<MatchTabsProps> = ({
             <button
               key={id}
               onClick={() => onTabChange(id)}
-              className={`group relative flex items-center gap-1.5 pt-1 pb-3 text-xs sm:text-[13px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors duration-150 ${
-                isActive ? '' : 'text-slate-500 hover:text-slate-200'
+              className={`group relative flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-semibold whitespace-nowrap transition-colors duration-150 ${
+                isActive ? 'text-slate-900' : 'text-slate-400 hover:text-slate-700'
               }`}
-              style={isActive ? { color: 'var(--league-accent)' } : undefined}
             >
               {isLiveActive && (
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
               )}
               <span>{label}</span>
               {count > 0 && (
-                <span
-                  className="text-[11px] font-extrabold tabular-nums transition-colors"
-                  style={{ color: isActive ? 'var(--league-accent)' : undefined }}
-                >
+                <span className="text-[11px] font-bold tabular-nums text-slate-400">
                   {count}
                 </span>
               )}
               <span
-                className={`absolute left-0 right-0 -bottom-px h-[2px] rounded-full transition-all duration-200 ${
-                  isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-30'
+                className={`absolute left-3 right-3 bottom-0 h-[3px] rounded-t-full transition-all duration-200 ${
+                  isActive ? 'opacity-100' : 'opacity-0'
                 }`}
-                style={{
-                  backgroundColor: 'var(--league-accent)',
-                  boxShadow: isActive ? '0 0 12px var(--league-accent-soft)' : 'none',
-                }}
+                style={{ backgroundColor: 'var(--league-accent)' }}
               />
             </button>
           );

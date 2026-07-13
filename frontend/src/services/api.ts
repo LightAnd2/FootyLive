@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Match, MatchListResponse, Team, Player, Standings, Scorers } from '../types';
+import { HeadToHead, Match, MatchListResponse, Team, Player, Standings, Scorers } from '../types';
 import type { LeagueCode } from '../constants/leagues';
 import { API_BASE_URL } from '../config';
 
@@ -47,6 +47,11 @@ const apiService = {
     return response.data;
   },
 
+  getMatchH2H: async (id: number): Promise<HeadToHead> => {
+    const response = await api.get(`/matches/${id}/h2h`);
+    return response.data;
+  },
+
   syncMatches: async (): Promise<void> => {
     await api.post('/matches/sync');
   },
@@ -85,14 +90,25 @@ const apiService = {
     return response.data;
   },
 
-  getStandings: async (competition: LeagueCode): Promise<Standings> => {
-    const response = await api.get('/standings', { params: { competition } });
+  getPlayerProfile: async (personId: number) => {
+    const response = await api.get(`/players/${personId}/profile`);
     return response.data;
   },
 
-  getScorers: async (competition: LeagueCode, limit: number = 20): Promise<Scorers> => {
-    const response = await api.get('/scorers', { params: { limit, competition } });
+  getStandings: async (competition: LeagueCode, season?: string): Promise<Standings> => {
+    const response = await api.get('/standings', { params: { competition, season } });
     return response.data;
+  },
+
+  getScorers: async (competition: LeagueCode, limit: number = 20, season?: string): Promise<Scorers> => {
+    const response = await api.get('/scorers', { params: { limit, competition, season } });
+    return response.data;
+  },
+
+  /** Finished seasons archived for this competition, most recent first. Empty if none yet. */
+  getSeasons: async (competition: LeagueCode): Promise<string[]> => {
+    const response = await api.get('/seasons', { params: { competition } });
+    return response.data.seasons ?? [];
   },
 
   getCleanSheets: async (competition: LeagueCode) => {

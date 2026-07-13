@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import Header from './components/Header';
-import LeagueBackground from './components/LeagueBackground';
+import Sidebar from './components/Sidebar';
 import MatchTabs from './components/MatchTabs';
 import MatchGrid from './components/MatchGrid';
 import StandingsTable from './components/StandingsTable';
 import ScorersTable from './components/ScorersTable';
+import SeasonSelect from './components/SeasonSelect';
 import MatchDetail from './components/MatchDetail';
 import TeamsPage from './components/TeamsPage';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -13,7 +13,7 @@ import ErrorMessage from './components/ErrorMessage';
 import { Match, MatchStatus } from './types';
 import { apiService } from './services/api';
 import { useWebSocket } from './hooks/useWebSocket';
-import { DEFAULT_LEAGUE, DOMESTIC_LEAGUES, EUROPEAN_LEAGUES, INTERNATIONAL_LEAGUES, LEAGUE_MAP, type LeagueCode } from './constants/leagues';
+import { CUP_CODES, DEFAULT_LEAGUE, LEAGUE_MAP, type LeagueCode } from './constants/leagues';
 import { WS_URL } from './config';
 
 const dedupeMatches = (items: Match[]) => {
@@ -21,59 +21,6 @@ const dedupeMatches = (items: Match[]) => {
   items.forEach((match) => map.set(match.id, match));
   return Array.from(map.values());
 };
-
-const LeagueSection: React.FC<{
-  title: string;
-  leagues: typeof DOMESTIC_LEAGUES;
-  selectedLeague: LeagueCode;
-  onSelect: (league: LeagueCode) => void;
-}> = ({ title, leagues, selectedLeague, onSelect }) => (
-  <div className="flex flex-col items-center gap-2">
-    <p
-      className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-slate-200"
-      style={{ textShadow: '0 1px 4px rgba(0,0,0,0.85)' }}
-    >
-      {title}
-    </p>
-    <div className="flex items-center justify-center gap-2 flex-wrap">
-      {leagues.map((league) => {
-        const isActive = league.code === selectedLeague;
-        return (
-          <button
-            key={league.code}
-            onClick={() => onSelect(league.code)}
-            aria-label={league.name}
-            title={league.name}
-            aria-pressed={isActive}
-            className="flex flex-col items-center justify-center gap-2 px-2 pt-2 pb-1 transition-all hover:-translate-y-0.5"
-          >
-            <img
-              src={league.emblem}
-              alt={league.name}
-              className={`w-11 h-11 sm:w-14 sm:h-14 object-contain transition-all ${
-                isActive ? 'scale-110' : 'scale-100'
-              } ${league.code === 'CL' ? 'bg-white rounded-lg p-1.5' : ''}`}
-              style={
-                isActive
-                  ? { filter: `drop-shadow(0 0 10px ${league.accentBright})` }
-                  : undefined
-              }
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
-            />
-            <span
-              className="h-[3px] rounded-full transition-all"
-              style={{
-                width: isActive ? '1.75rem' : '0',
-                backgroundColor: league.accentBright,
-                boxShadow: isActive ? `0 0 8px ${league.accentBright}` : 'none',
-              }}
-            />
-          </button>
-        );
-      })}
-    </div>
-  </div>
-);
 
 const AppInner: React.FC = () => {
   const navigate = useNavigate();
@@ -84,7 +31,9 @@ const AppInner: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<MatchStatus>('live');
+  const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const fetchSeq = useRef(0);
   const [wsConnected, setWsConnected] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<LeagueCode>(() => {
     if (typeof window === 'undefined') {
@@ -95,10 +44,10 @@ const AppInner: React.FC = () => {
   });
 
   const leagueTheme = LEAGUE_MAP[selectedLeague];
-  const showTeamsTab = selectedLeague !== 'CL' && selectedLeague !== 'WC';
-  const showBracketTab = selectedLeague === 'CL';
+  const isCup = CUP_CODES.includes(selectedLeague);
+  const showTeamsTab = !isCup;
+  const showBracketTab = isCup;
   const isOnMatchDetail = location.pathname.startsWith('/match/');
-  const currentScreen = isOnMatchDetail ? 'detail' : activeTab;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -107,13 +56,7 @@ const AppInner: React.FC = () => {
     root.style.setProperty('--league-accent-text', leagueTheme.accentText);
     root.style.setProperty('--league-accent-bright', leagueTheme.accentBright);
     root.style.setProperty('--league-accent-bright-soft', leagueTheme.accentBrightSoft);
-    root.style.setProperty('--league-page-background', leagueTheme.pageBackground);
-    root.style.setProperty('--league-stripe-color', leagueTheme.stripeColor);
-    root.style.setProperty('--league-line-color', leagueTheme.lineColor);
-    root.style.setProperty('--league-ring-color', leagueTheme.ringColor);
-    root.setAttribute('data-screen', currentScreen);
-    root.setAttribute('data-league', selectedLeague);
-  }, [currentScreen, leagueTheme, selectedLeague]);
+  }, [leagueTheme]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -138,14 +81,21 @@ const AppInner: React.FC = () => {
     setAllMatches(dedupeMatches(merged));
   }, [selectedLeague]);
 
-  const fetchMatches = useCallback(async (tab: MatchStatus) => {
+  const fetchMatches = useCallback(async (tab: MatchStatus, background = false) => {
     if (tab === 'standings' || tab === 'bracket' || tab === 'scorers' || tab === 'teams') {
       setLoading(false);
+      setError(null);
       return;
     }
 
+    // Guard against a slow earlier request (e.g. the initial Live fetch)
+    // resolving after a tab switch and clobbering the newer tab's list.
+    const seq = ++fetchSeq.current;
+
     try {
-      setLoading(true);
+      // Background refreshes (intervals, window focus) update in place without
+      // unmounting the list behind a spinner.
+      if (!background) setLoading(true);
       setError(null);
       let fetched: Match[] = [];
 
@@ -170,12 +120,14 @@ const AppInner: React.FC = () => {
         }
       }
 
+      if (seq !== fetchSeq.current) return;
       setMatches(fetched);
       setLastUpdated(new Date());
     } catch (err) {
+      if (seq !== fetchSeq.current) return;
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setLoading(false);
+      if (seq === fetchSeq.current) setLoading(false);
     }
   }, [selectedLeague]);
 
@@ -185,14 +137,28 @@ const AppInner: React.FC = () => {
       const leagueMatches = message.matches.filter(
         (match) => match.competition_code === selectedLeague,
       );
+      const liveIds = new Set(leagueMatches.map((match) => match.id));
       setLastUpdated(new Date());
       if (activeTab === 'live') {
         setMatches(leagueMatches);
       }
-      setAllMatches((prev) => dedupeMatches([
-        ...leagueMatches,
-        ...prev.filter((match) => match.status !== 'live' && match.status !== 'half_time'),
-      ]));
+      // Matches that dropped out of the live feed just finished — keep them as
+      // full_time so tab counts don't dip until the next poll refreshes results.
+      setAllMatches((prev) => {
+        const justFinished = prev
+          .filter((match) =>
+            (match.status === 'live' || match.status === 'half_time')
+            && match.competition_code === selectedLeague
+            && !liveIds.has(match.id),
+          )
+          .map((match) => ({ ...match, status: 'full_time' as const }));
+
+        return dedupeMatches([
+          ...leagueMatches,
+          ...justFinished,
+          ...prev.filter((match) => match.status !== 'live' && match.status !== 'half_time'),
+        ]);
+      });
     } else if (message.type === 'connected') {
       setWsConnected(true);
     }
@@ -230,7 +196,7 @@ const AppInner: React.FC = () => {
 
     const intervalMs = activeTab === 'live' ? 30000 : 60000;
     const intervalId = setInterval(() => {
-      fetchMatches(activeTab);
+      fetchMatches(activeTab, true);
       fetchAllMatches();
     }, intervalMs);
 
@@ -240,7 +206,7 @@ const AppInner: React.FC = () => {
   useEffect(() => {
     const onFocus = () => {
       if (document.visibilityState === 'visible') {
-        fetchMatches(activeTab);
+        fetchMatches(activeTab, true);
         fetchAllMatches();
       }
     };
@@ -261,6 +227,27 @@ const AppInner: React.FC = () => {
     }
   };
 
+  const handleLeagueChange = (league: LeagueCode) => {
+    setSelectedLeague(league);
+    setActiveTab('live');
+    setSelectedSeason(null);
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
+
+  const handleSeasonChange = (season: string | null) => {
+    setSelectedSeason(season);
+    // A frozen past season only has the tab(s) it was archived with — cups tell their
+    // story through the bracket (no group-stage table); leagues through the table.
+    if (season) {
+      const validTabs: MatchStatus[] = showBracketTab ? ['bracket', 'scorers'] : ['standings', 'scorers'];
+      if (!validTabs.includes(activeTab)) {
+        setActiveTab(validTabs[0]);
+      }
+    }
+  };
+
   const matchCounts = {
     live: allMatches.filter((match) => match.status === 'live' || match.status === 'half_time').length,
     today: allMatches.filter(
@@ -271,79 +258,51 @@ const AppInner: React.FC = () => {
   };
 
   const mainContent = () => {
+    // Non-match tabs own their own loading/error — don't let a Live/Today
+    // fetch failure block Table, Teams, Stats, or Bracket.
+    if (activeTab === 'standings') return <StandingsTable competition={selectedLeague} season={selectedSeason} />;
+    if (activeTab === 'bracket') return <StandingsTable competition={selectedLeague} initialView="bracket" season={selectedSeason} />;
+    if (activeTab === 'scorers') return <ScorersTable competition={selectedLeague} season={selectedSeason} />;
+    if (activeTab === 'teams') return <TeamsPage competition={selectedLeague} />;
     if (loading) return <LoadingSpinner />;
     if (error) return <ErrorMessage message={error} onRetry={() => fetchMatches(activeTab)} />;
-    if (activeTab === 'standings') return <StandingsTable competition={selectedLeague} />;
-    if (activeTab === 'bracket') return <StandingsTable competition={selectedLeague} initialView="bracket" />;
-    if (activeTab === 'scorers') return <ScorersTable competition={selectedLeague} />;
-    if (activeTab === 'teams') return <TeamsPage competition={selectedLeague} />;
     return <MatchGrid matches={matches} activeTab={activeTab} competition={selectedLeague} />;
   };
 
   return (
-    <div className="min-h-screen">
-      <LeagueBackground league={selectedLeague} />
-      <Header />
+    <div className="min-h-screen pl-16 lg:pl-60">
+      <Sidebar selectedLeague={selectedLeague} onSelectLeague={handleLeagueChange} />
 
-      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className={`mx-auto px-4 sm:px-6 py-5 sm:py-6 ${activeTab === 'bracket' && !isOnMatchDetail ? 'max-w-[1400px]' : 'max-w-5xl'}`}>
         {!isOnMatchDetail && (
-          <div className="text-center mb-8">
-            <div
-              className="mb-5 inline-block rounded-2xl border-2 px-5 py-4 sm:px-8 sm:py-5"
-              style={{ borderColor: 'var(--league-accent)' }}
-            >
-              <div className="space-y-4">
-                <LeagueSection
-                  title="Domestic Leagues"
-                  leagues={DOMESTIC_LEAGUES}
-                  selectedLeague={selectedLeague}
-                  onSelect={setSelectedLeague}
-                />
-                <LeagueSection
-                  title="Europe"
-                  leagues={EUROPEAN_LEAGUES}
-                  selectedLeague={selectedLeague}
-                  onSelect={setSelectedLeague}
-                />
-                <LeagueSection
-                  title="International"
-                  leagues={INTERNATIONAL_LEAGUES}
-                  selectedLeague={selectedLeague}
-                  onSelect={setSelectedLeague}
-                />
+          <div className="card mb-4">
+            <div className="flex items-center gap-4 px-5 pt-4 pb-3">
+              <img
+                src={leagueTheme.emblem}
+                alt=""
+                className="h-12 w-12 object-contain"
+              />
+              <div className="min-w-0 flex-1">
+                <h1 className="truncate text-lg font-bold leading-tight text-slate-900">{leagueTheme.name}</h1>
+                <p className="text-xs text-slate-400">{leagueTheme.country}</p>
               </div>
+              <SeasonSelect competition={selectedLeague} value={selectedSeason} onChange={handleSeasonChange} />
             </div>
-
-            <h1
-              className="text-4xl sm:text-6xl lg:text-7xl font-black mb-2 leading-none break-words"
-              style={{ fontFamily: leagueTheme.titleFont }}
-            >
-              <span
-                className="bg-clip-text text-transparent drop-shadow-lg"
-                style={{ backgroundImage: leagueTheme.titleGradient }}
-              >
-                {leagueTheme.name}
-              </span>
-            </h1>
+            <MatchTabs
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              matchCounts={matchCounts}
+              showTeamsTab={showTeamsTab}
+              showBracketTab={showBracketTab}
+              archivedMode={Boolean(selectedSeason)}
+            />
           </div>
         )}
 
-        {!isOnMatchDetail && (
-          <MatchTabs
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            matchCounts={matchCounts}
-            showTeamsTab={showTeamsTab}
-            showBracketTab={showBracketTab}
-          />
-        )}
-
-        <div className="mt-2">
-          <Routes>
-            <Route path="/" element={mainContent()} />
-            <Route path="/match/:id" element={<MatchDetail />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={mainContent()} />
+          <Route path="/match/:id" element={<MatchDetail />} />
+        </Routes>
       </main>
     </div>
   );
