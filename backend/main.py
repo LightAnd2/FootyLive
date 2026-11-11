@@ -9,6 +9,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api import matches, teams, players, rate_limit, standings, scorers, clean_sheets, seasons
 from app.core.config import settings
+from app.core.cache import init_cache
 from app.core.database import engine, Base, SessionLocal
 from app.core.middleware import RateLimitMiddleware
 from app.models import match, team, player, season_archive
@@ -193,6 +194,9 @@ async def today_match_syncer():
 
 @app.on_event("startup")
 async def startup_event():
+    # Decide Redis vs in-memory cache before any request is served.
+    await init_cache()
+
     # Sync a recent window immediately on startup so finished games are corrected
     # even if the server was down during live play.
     try:
